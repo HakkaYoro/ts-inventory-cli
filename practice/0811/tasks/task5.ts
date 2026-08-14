@@ -37,8 +37,8 @@ const gameToho: tituloToho =[
 ]
 
 //Operación O(n), no sabe que hay ahí, tiene que buscar uno a uno cada elemento. Si cada elemento se tarda 1s en revisar, 10 tomaría 10s, 1000 tomaría 1000s, 10000 tomaría 10000s, y así sucesivamente.
-function tohoJugado (gameToho: string) {
-    if (gameToho.includes("Soku")) 
+function tohoJugado (juego: string) {
+    if (gameToho.includes(juego))
         return 'Jugado'
     else
         return 'Pero chiamo </3'
@@ -47,8 +47,8 @@ function tohoJugado (gameToho: string) {
 //Operación O(1), sabe que hay ahí. Pre-indexado/analizado. Cómo sabe que hay ahí, puede tener 999999 elementos, pero siempre va a tardar lo mismo para encontrar un dato.
 const setToho = new Set(gameToho)
 
-function setTohoJugado (gameToho: string){
-    if (setToho.has("GFW")) 
+function setTohoJugado (setJuego: string){
+    if (setToho.has(setJuego)) 
         return 'Jugado'
     else
         return 'Pero chiamo </3'
