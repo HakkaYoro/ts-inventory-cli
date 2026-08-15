@@ -146,7 +146,7 @@ function stuPatcher(onlyName: string, cambios: PatchStuData) {
 	const student = schaleStudents.find((student) => student.nombre === onlyName);
 	if (!student) return new Error(`No encontrada la estudiante ${onlyName}`);
 
-	if (student && cambios.nivel) {
+	if (cambios.nivel) {
 		student.nivel = cambios.nivel;
 		return `Nivel de ${student.nombre} cambiado a ${cambios.nivel}`;
 	}
