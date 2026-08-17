@@ -65,21 +65,25 @@
 //    un array del type del punto 2 (el de Pick, la lista pública).
 //    Usa .map(). La función transforma cada ItemPSO al tipo reducido.
 //
-// PARTE B — Partial y Record: datos que cambian (25 min):
+// PARTE B — Partial, Record y Generics de regreso (30 min):
 //
 // 4) Crea un type con Partial que represente "campos opcionales
 //    para actualizar un item". Si el usuario solo quiere cambiar
 //    el ataque, se pasa { ataque: 900 }. Si solo el nombre,
 //    { nombre: "Nuevo Nombre" }. Partial hace que TODO sea opcional.
 //
-// 5) Escribe una función actualizarItem que reciba:
+// 5) Escribe una función actualizarItem GENÉRICA que reciba:
 //    - El nombre del item a buscar (string)
 //    - Un objeto con los campos a actualizar (el type del punto 4)
+//    - Un array donde buscar (GENÉRICO — igual que buscarPorNombre)
 //
 //    La función:
-//    a) Busca el item con tu buscarPorNombre de ayer (¡la genérica!)
+//    a) Usa <T extends { nombre: string }> — igual que tu
+//       buscarPorNombre de ayer. No reescribas la búsqueda:
+//       IMPORTA o llama a buscarPorNombre dentro de actualizarItem.
 //    b) Si lo encuentra, aplica los cambios (Object.assign o manual)
-//    c) Si no, throw
+//    c) Si no, throw (guard clause — if + || + throw, como tu
+//       constructor de ItemPSO)
 //
 //    OJO: ItemPSO tiene props readonly. Esto va a explotar — y eso
 //    ES la trampa. Lee el error del compilador y piensa: ¿por qué
@@ -88,10 +92,18 @@
 //    en comentarios.)
 //
 // 6) Con Record, crea un mapa de items por rarity:
-//    Record<string, ItemPSO[]> donde la key es "common" o "rare"
-//    y el value es el array de items de esa rarity. Llénalo
-//    recorriendo tu array de ayer con un for-of (el mismo patrón
-//    de contarPorRarity pero acumulando arrays, no números).
+//    Record<string, T[]> donde T es genérico (extends { nombre: string,
+//    rarity: string }). La key es "common" o "rare" y el value es el
+//    array de items de esa rarity. Escribe una función GENÉRICA
+//    agruparPorRarity<T>(items: T[]) que recorra el array con un
+//    for-of (el patrón de contarPorRarity pero acumulando arrays,
+//    no números) y devuelva el Record.
+//
+//    REFUERZO: esta función combina TODO lo de hoy y ayer:
+//    - <T extends ...> (generics + constraint, Día 8)
+//    - for-of + acumulador + || default (warm-up D6/D8)
+//    - Record<string, T[]> (utility types, Día 9)
+//    - guard clause con if (Día 8)
 //
 // PARTE C — Explicaciones que caen en entrevista (20 min):
 //
@@ -107,6 +119,10 @@
 //       literal y con un Map de Python?
 //    e) ¿Por qué readonly le rompe la actualización a tu función
 //       del punto 5? ¿Qué ES readonly exactamente (regla vs valor)?
+//    f) ¿Qué ES <T extends { nombre: string }>? ¿Por qué necesitas
+//       el extends y no solo <T>? (Refuerzo de ayer.)
+//    g) ¿Qué ES una guard clause? Da el ejemplo de tu constructor
+//       de ItemPSO (if + || + throw). (Refuerzo de ayer.)
 //
 // Reglas de siempre: === SIEMPRE. Sin valores quemados en
 // funciones. Releer el enunciado completo antes de decir "listo".
@@ -121,6 +137,6 @@
 // algo readonly? El compilador te lo va a decir — pero es mejor
 // pensarlo antes.
 //
-// Total estimado: 80-90 min.
+// Total estimado: 90-100 min.
 // Start Time: (18/08) XX:YY - XX:YY
 // Total Time Spent: D9 XXX:YY
