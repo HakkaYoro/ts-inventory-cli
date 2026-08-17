@@ -82,8 +82,8 @@
 //       buscarPorNombre de ayer. No reescribas la búsqueda:
 //       IMPORTA o llama a buscarPorNombre dentro de actualizarItem.
 //    b) Si lo encuentra, aplica los cambios (Object.assign o manual)
-//    c) Si no, throw (guard clause — if + || + throw, como tu
-//       constructor de ItemPSO)
+//    c) Si no, throw (guard clause con if, como tu constructor
+//       de ItemPSO — pero aquí el guard es simple: if (!item) throw)
 //
 //    OJO: ItemPSO tiene props readonly. Esto va a explotar — y eso
 //    ES la trampa. Lee el error del compilador y piensa: ¿por qué
@@ -103,7 +103,6 @@
 //    - <T extends ...> (generics + constraint, Día 8)
 //    - for-of + acumulador + || default (warm-up D6/D8)
 //    - Record<string, T[]> (utility types, Día 9)
-//    - guard clause con if (Día 8)
 //
 // PARTE C — Explicaciones que caen en entrevista (20 min):
 //
@@ -121,8 +120,9 @@
 //       del punto 5? ¿Qué ES readonly exactamente (regla vs valor)?
 //    f) ¿Qué ES <T extends { nombre: string }>? ¿Por qué necesitas
 //       el extends y no solo <T>? (Refuerzo de ayer.)
-//    g) ¿Qué ES una guard clause? Da el ejemplo de tu constructor
-//       de ItemPSO (if + || + throw). (Refuerzo de ayer.)
+//    g) ¿Qué ES una guard clause? Da DOS ejemplos: el de tu
+//       constructor de ItemPSO (if + || + throw) y el de
+//       actualizarItem (if + throw simple). ¿Cuál es la diferencia?
 //
 // Reglas de siempre: === SIEMPRE. Sin valores quemados en
 // funciones. Releer el enunciado completo antes de decir "listo".
