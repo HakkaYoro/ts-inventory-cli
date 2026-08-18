@@ -76,21 +76,9 @@
 // Start Time: (17/08) 13:00 - 16:42
 // Total Time Spent: D1 184:22
 
-/* 
-Warm-Up
-function contarPorRarity(
-	contRarity: readonly classRarity[],
-): Record<string, number> {
-	const conteo: Record<string, number> = {};
-	for (const rarity of contRarity) {
-		const repRarity = rarity.rareza;
-		conteo[repRarity] = (conteo[repRarity] || 0) + 1;
-	}
-	return conteo;
-} */
 import { misWaifus } from "./vocaloids-data";
 
-class ItemPSO {
+export class ItemPSO {
 	readonly nombre: string;
 	readonly rarity: "common" | "rare";
 	private ataque: number;
@@ -110,11 +98,10 @@ class ItemPSO {
 		this.rarity = rarStar <= 6 ? "common" : "rare";
 		this.ataque = ataque;
 		this.equipado = equipado;
-		console.log(this.rarity);
 	}
 }
 
-const itemList: ItemPSO[] = [
+export const itemList: ItemPSO[] = [
 	new ItemPSO("Excalibur", 12, 890, true),
 	new ItemPSO("Heaven Striker", 12, 625, false),
 	new ItemPSO("Lavis Cannon", 11, 782, true),
@@ -126,7 +113,7 @@ const itemList: ItemPSO[] = [
 	new ItemPSO("Tsumikiri J-Sword", 12, 765, false),
 ];
 
-function buscarPorNombre<T extends { nombre: string }>(
+export function buscarPorNombre<T extends { nombre: string }>(
 	searchName: string,
 	nombres: T[],
 ) {
@@ -136,6 +123,18 @@ function buscarPorNombre<T extends { nombre: string }>(
 	return searchItem;
 }
 
+function contarPorRarity(
+	contRarity: readonly ItemPSO[],
+): Record<string, number> {
+	const conteo: Record<string, number> = {};
+	for (const rarity of contRarity) {
+		const repRarity = rarity.rarity;
+		conteo[repRarity] = (conteo[repRarity] || 0) + 1;
+	}
+	return conteo;
+}
+
+console.log(contarPorRarity(itemList));
 console.log(buscarPorNombre("Saber", itemList));
 console.log(buscarPorNombre("Reimu Hakurei", misWaifus));
 // PARTE B — Generics, el tema del día (35 min):
