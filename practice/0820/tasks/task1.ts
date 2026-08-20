@@ -24,7 +24,11 @@
 //    c) export: ¿qué ES exactamente? (Carta del Día 6 — la mitad que OFRECE.)
 //    d) parámetro del constructor vs propiedad: ¿cuál muere al terminar el
 //       constructor? (Carta del Día 8.)
-//
+//          R: Es una variable constante, eso significa que no es reasignable.
+//              Interface y Type son lo mismo. En sí, el caso de uso depende en que si vas a usarlo muchas veces a lo largo del proyecto (Interface para objetos) y type para cosas más pequeñas o para usar en el momento (funciones o variables).
+//              Export es una función de ES (no recuerdo qué significa ES, pero es la versión moderna de CJS la C no la recuerdo) que permite de forma sencilla exportar funciones, clases, tipos y variables hacia otros archivos.
+//              El parámetro es lo que vive dentro del parentesis, en el compile-time se lee una vez y muere, la propiedad es lo que se queda vivo siempre, es la invocación del parámetro this.xxxx.
+//                  Corrección de Reimu: El export es una declaración, no una función, ECMAScript es la versión moderna de CommonJS.
 // 2) [Hueco que REAPARECIÓ 2 veces el Día 10] Truthiness con guards:
 //    escribiste `if (!valor)` (Parte A) y `if (!contentType) throw` (Parte B)
 //    — los dos eran código muerto o dañino. El guard protege contra lo que
@@ -32,7 +36,8 @@
 //    falsy, NO contra uniones cerradas.
 //    Escribe en comentarios: ¿cuándo SÍ necesita guard una función? Da un
 //    ejemplo de un guard que SÍ tenga sentido (piensa en tu ItemPSO).
-//
+//      R: Solo si el valor puede resultar en undefined. Solo que en las funciones de ayer, ya por los interfaces ya estaba determinado que era imposible que resultara en undefined, además que el "!" fastidiaba si el número era un 0 o si era un string vacío "". Cosa que, ambos cumplian con lo que se pedía.
+//          Corrección de Reimu: No había leído lo último, if (rarStar < 1 || rarStar > 12) lo necesitaba porque podía dar resultados erroneos... Espera, yo nunca hice eso, hah? Sí lo hice... No recordaba, hay que repasar eso en código mañana. Osea, escribir eso exactamente no recordaba.
 // 3) [Hueco que REAPARECIÓ en la Parte C del Día 10] type guard vs guard
 //    clause vs if normal — las tres cosas separadas, una línea cada una:
 //    - if normal: verifica algo en RUNTIME (¿es true?).
@@ -40,6 +45,7 @@
 //      instanceof, x is Tipo). Es el SELLO de identidad.
 //    - guard clause: patrón de validar y ABORTAR temprano (if + throw).
 //    ¿Cuál de los tres usa esVisualNovel? ¿Y procesarContenido?
+//      R: Antes de revisar, a memoria, type guard "esVisualNovel" y if normal procesarContenido. Revisando el código, exacto, eso lo que dije, no se usó un guard clause.
 //
 // PARTE A — Promise a mano (25 min):
 //
@@ -76,7 +82,7 @@
 //    then). Imprime el mensaje del error.
 //    Pregunta para responder en comentario: ¿qué pasa si una Promise
 //    falla (rejected) y NADIE la maneja?
-//
+//      R: Procede sin problemas, porque nadie la rechaza.
 // 5) Escribe una función descargarTodo() que descargue las 3 canciones
 //    EN PARALELO con Promise.all([...]) y un solo await. Imprime el
 //    array completo de una vez. Compara en comentario: ¿cuánto tarda
@@ -119,10 +125,74 @@
 // El núcleo no depende de internet (setTimeout simula la espera).
 //
 // Total estimado: 95-110 min.
-// Start Time: (21/08) XX:YY - XX:YY
+// Start Time: (20/08) 04:36 - 06:08 / Pausa por salida / 15:33 -
 // Total Time Spent: D11 XXX:YY
 //
 // WORKFLOW INCREMENTAL: al terminar cada parte (Warm-up/A/B/C), manda
 // un mensaje corto a Reimu ("parte X lista, me trabé en Y, seguía").
 // Ella actualiza el progress en tiempo real y ajusta esta task. No es
 // un reporte formal entre partes — es un aviso de paso.
+
+async function descargarCancion(
+	titulo: string,
+	segundos: number,
+): Promise<string> {
+	if (!titulo) throw new Error(`No puede estar vacío! Idiota!`);
+	await new Promise((resolve) =>
+		setTimeout(() => resolve(titulo), segundos * 1000),
+	);
+	return titulo;
+	/* 	return new Promise((resolve, reject) => {
+		if (!titulo) reject(new Error(`No puede estar vacío! Idiota!`));
+		setTimeout(() => resolve(titulo), segundos * 1000);
+	}); */
+	/* 	return descarga; */
+}
+
+async function setlist() {
+	try {
+		const lista1 = await descargarCancion("", 2);
+		console.log(lista1);
+		const lista2 = await descargarCancion("Usseewa", 2);
+		console.log(lista2);
+		const lista3 = await descargarCancion("Kura Kura", 2);
+		console.log(lista3);
+		return [lista1, lista2, lista3];
+	} catch (error) {
+		if (error instanceof Error) {
+			console.log(error.message);
+		}
+	}
+	/* 	const lista = descargarCancion("Odo", 2).then((cancion) => {
+		console.log(cancion);
+		descargarCancion("Usseewa", 2).then((cancion2) => {
+			console.log(cancion2);
+			descargarCancion("Kura Kura", 2).then((cancion3) =>
+				console.log(cancion3),
+			);
+		});
+	});
+	return lista; */
+}
+
+async function descargarTodo() {
+	const odioalmundo = await Promise.all([
+		descargarCancion("Odo", 2),
+		descargarCancion("Usseewa", 2),
+		descargarCancion("Kura Kura", 2),
+	]);
+	return odioalmundo;
+}
+descargarTodo().then((canciones) => console.log(canciones));
+
+// PARTE B — async/await (35 min):
+// 5) Escribe una función descargarTodo() que descargue las 3 canciones
+//    EN PARALELO con Promise.all([...]) y un solo await. Imprime el
+//    array completo de una vez. Compara en comentario: ¿cuánto tarda
+//    la versión secuencial (punto 2) vs esta? (3 canciones × 2s cada una
+//    secuencial = 6s; en paralelo = ~2s.)
+//    [Refuerzo Día 10 — Record y for-of]: el array que devuelve
+//    Promise.all es un array de strings. Si quisieras agrupar esas
+//    canciones por su primera letra en un Record<string, string[]>,
+//    ¿quién llena la caja: Record o tu código? (Una línea en comentario.)
+/* console.log(setlist()); */
