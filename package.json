@@ -1,0 +1,7 @@
+{
+  "name": "ts-inventory-cli",
+  "type": "module",
+  "devDependencies": {
+    "@types/node": "^26.2.0"
+  }
+}
