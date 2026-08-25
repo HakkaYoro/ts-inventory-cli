@@ -3,7 +3,6 @@ import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { Cantidad } from "./vo/cantidad.vo.ts";
 import { Nombre } from "./vo/nombre.vo.ts";
 import { Rareza } from "./vo/rareza.vo.ts";
-import { error } from "node:console";
 
 type PsoItemData = {
 	nombre: string;
