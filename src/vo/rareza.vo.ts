@@ -6,6 +6,9 @@ export class Rareza {
 	}
 
 	private validate(rareza: number) {
+		if (!rareza) {
+			throw new Error("No se admiten datos vacíos.");
+		}
 		if (!Number.isInteger(rareza)) {
 			throw new Error(`No se aceptan decimales. Inténtelo de nuevo...`);
 		}

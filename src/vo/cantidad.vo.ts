@@ -5,6 +5,9 @@ export class Cantidad {
 		this.value = cantidad;
 	}
 	private validate(cantidad: number) {
+		if (!cantidad) {
+			throw new Error("No se admiten datos vacíos.");
+		}
 		if (!Number.isInteger(cantidad)) {
 			throw new Error(`No se aceptan decimales. Inténtelo de nuevo...`);
 		}
