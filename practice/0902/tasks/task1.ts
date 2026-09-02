@@ -9,7 +9,7 @@
 // intento propio primero (aunque salga feo o no compile), docs DESPUÉS,
 // comparar al final. El intento fallido es el que instala el patrón.
 
-// ══ LEER JUEVES (Sep 3) ANTES DEL ANKI — correcciones del D19 ══
+// ══ LEER HOY (Sep 2) ANTES DEL ANKI — correcciones del D19 ══
 
 // ═══════════ WARM-UP (sin pistas — una línea cada una) ═══════════
 
