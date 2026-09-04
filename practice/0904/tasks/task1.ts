@@ -34,7 +34,7 @@
 //     order-api NO, clasifica cada una: ¿del dominio del bot (Discord,
 //     audio, red de esta máquina) o del mundo Nest/Node? Una por línea.
 // A.3 La última línea de tu main.ts es bootstrap(); pelado. La de
-//     Hakkurin (líneas 42-46) es bootstrap().catch(...). ¿Qué familia
+//     Hakkurin (líneas 43-47) es bootstrap().catch(...). ¿Qué familia
 //     es esa — y qué gana el de Hakkurin sobre el tuyo?
 // A.4 El ?? de tu warm-up aparece dos veces en la línea 40 de Hakkurin:
 //     process.env.PORT ?? 8000, process.env.WEBUI_HOST ?? '::'.
@@ -71,7 +71,7 @@
 
 // ═══════════ PARTE C — Preguntas de entrevista ═══════════
 
-// C.1 Un entrevistador te dice: "Explicame el bootstrap de tu bot en
+// C.1 Un entrevistador te dice: "Explícame el bootstrap de tu bot en
 //     3 líneas". Tres líneas, con Hakkurin recién leído.
 // C.2 Las líneas 15-17 de Hakkurin fuerzan IPv4 en las conexiones
 //     salientes. ¿Por qué existen esas líneas en Hakkurin y NO en tu
