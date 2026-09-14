@@ -22,42 +22,85 @@
 // 1. Ayer registraste el guard así:
 //      providers: [AppService, { provide: APP_GUARD, useClass: ApiGuard }]
 //    ¿Qué papel juega el string APP_GUARD ahí? Una línea.
-//          R:
+//          R: Si no me equivoco, se usa APP_GUARD para indicarle a nest que la clase ApiGuard es un Guard y debe ser tratado cómo tal.
 // 2. La fila del pipeline: middleware → guards → interceptors → pipes → handler.
 //    Tu embajador de ayer (ExceptionFilter) — ¿en qué escalón de esa fila vive?
 //    Una línea.
-//          R:
+//          R: Vive en todos, solo se dispara cuando ocurre un error/excepción en alguno de los escalones. Ayer específicamente en Guard.
 // 3. De tu guard de ayer: ¿request.method o request.method()? ¿Por qué? Una línea.
-//          R:
+//          R: request.method, ya que SOLO estoy leyendo el valor. En cambio si pongo () es porque estoy ejecutando una función.
 
 // ═══════════ PARTE A — ESCRIBIR: el CRUD real (order-api) ═══════════
 
 // El cliente habla:
 // "El esqueleto ya está, pero tu service me responde 'This action adds a new
 // order' — texto de relleno, no un servicio. Necesito una API de pedidos REAL.
-// Requisitos duros:
-// - Estado en MEMORIA (un array en tu service — no hay base de datos todavía;
-//   eso llega en un día futuro y lo vas a ver venir).
-// - El ID lo asigna el server: 1, 2, 3... — el primero que crees es el 1.
-// - Cuando pidan algo que NO existe (ver, actualizar o borrar) → status 404.
-//   Tu embajador de ayer ya le da forma al body; hoy TÚ generas el error.
-// - La validación del DTO que escribiste el D19 sigue viva (ValidationPipe
-//   global) — no la rompas.
-// - NO toques greet ni pings. El controller de orders ya está; si lo tocas,
-//   que sea para mejorarlo, no para re-cablearlo.
+// Así la pruebo yo cuando la tengas (cada línea es UNA petición; el header
+// X-Api-Key es tu guard de ayer — sin él, TODO responde 403):
 //
-// Decisiones TUYAS: la forma del estado (¿un array de qué? ¿cómo se ve un
-// pedido guardado? — pista: el DTO define los campos que el cliente manda,
-// y el server le agrega el id), qué devuelve cada método (¿el objeto creado
-// entero? ¿el array? ¿el objeto actualizado?), y los textos de tus 404.
+//   curl -X POST localhost:3000/orders -H "X-Api-Key: orden-secreta" \
+//        -H "Content-Type: application/json" \
+//        -d '{"cliente":"Marisa","item":"Escoba Mágica","cantidad":1}'
+//   curl localhost:3000/orders -H "X-Api-Key: orden-secreta"
+//   curl localhost:3000/orders/1 -H "X-Api-Key: orden-secreta"
+//   curl -X PATCH localhost:3000/orders/1 -H "X-Api-Key: orden-secreta" \
+//        -H "Content-Type: application/json" -d '{"cantidad":5}'
+//   curl -X DELETE localhost:3000/orders/1 -H "X-Api-Key: orden-secreta"
+//
+// Contrato, operación por operación:
+//
+// 1) CREAR — POST /orders (body: cliente, item, cantidad)
+//    - La validación que escribiste el D19 sigue viva: body inválido
+//      (cliente vacío, cantidad 0 o texto...) muere con 400 ANTES de que
+//      tu método corra. No la rompas.
+//    - El id NO viene en el body: lo asigna el server. El primer pedido
+//      creado es el 1, el siguiente el 2, y así.
+//    - Respuesta: 201 Created, con el pedido creado ENTERO, id incluido.
+//
+// 2) LISTAR — GET /orders
+//    - Respuesta: 200, con la lista completa de pedidos (todos los que
+//      existen hoy). ¿Qué devuelves cuando la lista está vacía? Piensa
+//      qué es un array vacío como respuesta.
+//
+// 3) VER UNO — GET /orders/:id
+//    - Existe → 200 con ese pedido. No existe → 404.
+//    - El 404 lo lanzas TÚ: no es ruta inexistente, el id llegó bien — el
+//      pedido es el que no está.
+//
+// 4) ACTUALIZAR — PATCH /orders/:id (body: SOLO los campos a cambiar)
+//    - Cambia únicamente los campos enviados; los que no mandes se quedan
+//      como están (PATCH es parcial, no reemplaza todo).
+//    - Existe → 200 con el pedido ya actualizado. No existe → 404.
+//
+// 5) BORRAR — DELETE /orders/:id
+//    - Existe → lo quita de la lista y responde 200 con el pedido borrado
+//      (así se ve QUÉ se fue). No existe → 404.
+//
+// El formato de los cuerpos de error (400 y 404) es el de tu embajador de
+// ayer: {statusCode, message, timestamp} — hoy TÚ generas el error, él le da
+// la forma. Y las reglas que no se tocan: greet y pings se quedan igual, y el
+// controller de orders ya está cableado (si lo tocas, que sea para
+// mejorarlo, no para re-cablearlo).
+//
+// Decisiones TUYAS (el diseño de adentro es tuyo; el contrato de afuera ya
+// quedó fijado arriba):
+// - Cómo se ve un pedido GUARDADO: el DTO define los campos que el cliente
+//   manda (cliente, item, cantidad) y el server le agrega el id. ¿Cómo
+//   nombras ese campo — id? ¿orderId? Lo que elijas es lo que se ve en el
+//   body del 201.
+// - Dónde vive el estado: un array en tu service (no hay base de datos
+//   todavía — eso llega en un día futuro y lo vas a ver venir).
+// - Los textos de tus mensajes de 404 (el mensaje viaja en el body del
+//   embajador, lo lee el cliente).
 //
 // Entregable observable — predicción ESCRITA antes de cada curl y verificación
 // contra el resultado real:
 //
 // PREDICCIÓN (crear): POST /orders con body válido (cliente, item, cantidad
 //   dentro de rango) + header X-Api-Key → predice el status Y el body exacto.
-//   Ojo: ¿qué devuelve tu service.create? ¿Solo el id, o el pedido entero con
-//   su id? Tu predicción tiene que incluir QUÉ campo trae el pedido guardado.
+//   El contrato dice que responde EL PEDIDO CREADO CON SU ID — predice las
+//   keys del body y sus valores (el nombre del id y el orden de las keys
+//   salen de cómo diseñaste tu estado — eso es tuyo).
 //          R.P.:
 //
 // PREDICCIÓN (validación): POST /orders con body INVALIDO (cliente vacío o
