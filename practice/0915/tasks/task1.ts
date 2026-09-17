@@ -1,24 +1,34 @@
 // TASK 0915 — Día 27: Testing — unit (Vitest) + E2E (supertest)
-// ESTADO: creada Sep 14 noche con los hechos del repo verificados (spec de
-// Santiago YA en Vitest y corriendo: "should be defined" pasa; supertest y
-// @types/supertest instalados). PRE-VERIFICACIÓN COMPLETA (tests de referencia
-// en copia /tmp) PENDIENTE — corre mañana antes de que la abras.
-// CONTEXTO: ayer le diste vida al service (estado en memoria, ids 1,2,3...,
+// ESTADO: CALIBRADA + PRE-VERIFICADA Sep 17 (copia /tmp, vitest 5 real):
+// suite de referencia del contrato = 10/10 contra el service actual del repo.
+// Las minas de abajo fueron re-verificadas UNA POR UNA el jue 17 — la del
+// fantasma era FALSA en la versión del lunes y hay 2 minas nuevas.
+// CONTEXTO: el lunes le diste vida al service (estado en memoria, ids 1,2,3...,
 // 404 propios en update/remove). El spec que Santiago migró solo dice "should
 // be defined" — hoy lo conviertes en el VERIFICADOR del contrato de ayer.
 // Hoy NO tocas el service para "arreglar" tests: primero escribes los tests
 // CONTRA EL CONTRATO, los corres, y dejas que te digan la verdad.
 //
-// Minas vigentes:
+// Minas vigentes (re-verificadas con vitest 5 real, Sep 17):
 // - `npm test` corre JEST y tu spec es de Vitest — ese comando miente.
 //   El que corre tus tests es: npx vitest run
-// - Vitest escanea la carpeta .stversions/ (copias viejas de syncthing):
-//   verás una suite fantasma FAIL ("Cannot find module './orders.service'").
-//   NO es un test tuyo ni un bug — es basura de sincronización. Córrelo con
-//   la ruta de tu archivo (npx vitest run src/orders/orders.service.spec.ts)
-//   o agrega .stversions al exclude. Tú decides.
-// - Puerto zombi: antes de arrancar el server para E2E, pkill -f "[d]ist/main"
-//   y verifica `ss -ltnp | grep 3000` vacío.
+// - LA SUITE FANTASMA: .stversions/ (basura de syncthing) guarda un spec con
+//   el MISMO NOMBRE que el tuyo → PASARLE LA RUTA NO LO EVITA (vitest filtra
+//   por nombre de archivo y el nombre coincide). El combo verificado:
+//   npx vitest run --exclude "**/.stversions/**" src/orders/orders.service.spec.ts
+//   Borrar la carpeta .stversions/ también la mata (es copia vieja de
+//   syncthing) — tú decides.
+// - LOS SPECS DE CONTROLLERS (orders.controller.spec.ts y app.controller.spec.ts,
+//   los del scaffold) FALLAN bajo vitest con "cannot resolve dependencies" al
+//   construir el módulo. NO es tu bug: vitest no emite la metadata de
+//   decoradores que Nest usa para inyectar en CONSTRUCTORES. Tu spec del
+//   SERVICE no la necesita (tu OrdersService no recibe nada en el ctor).
+//   E2E bajo vitest se resuelve con config de build (swc/unplugin) — otro
+//   día, no hoy. La pregunta C.4 es justo esta.
+// - Si escribes un E2E llamado orders.e2e-spec.ts, vitest NI LO VE ("No test
+//   files found"): su filtro exige .spec. o .test. tras un PUNTO. La
+//   convención .e2e-spec era de jest. Con vitest: test/orders.spec.ts.
+// - Puerto zombi: pkill -f "[d]ist/main" y verifica `ss -ltnp | grep 3000`.
 // - NO corras npm run format.
 
 // ═══════════ WARM-UP (sin pistas — una línea cada una) ═══════════
@@ -38,9 +48,9 @@
 // ═══════════ PARTE A — ESCRIBIR: tests unitarios de OrdersService ═══════════
 
 // El cliente habla:
-// "Ayer me diste una API que responde. Hoy quiero que la MÁQUINA lo
+// "El lunes me diste una API que responde. Hoy quiero que la MÁQUINA lo
 // verifique, no tus manos con curl. Escribe tests que capturen el contrato
-// que me prometiste ayer — cada línea de abajo es un comportamiento que tus
+// que me prometiste el lunes — cada línea de abajo es un comportamiento que tus
 // tests tienen que demostrar. El spec que ya existe (orders.service.spec.ts)
 // es tuyo: complétalo o reescríbelo, tú decides."
 //
@@ -62,8 +72,8 @@
 // PREDICCIÓN (tu test contra tu código — la importante del día):
 // Escribe PRIMERO el test de "findOne con id inexistente" exigiendo lo que
 // el CONTRATO manda (que lance). Antes de correrlo, predice: ¿PASA o FALLA
-// contra tu service de ayer? ¿Por qué? (Pista honesta: ¿qué respondía tu
-// findOne de ayer cuando el id no existía? Contrástalo con lo que este test
+// contra tu service del lunes? ¿Por qué? (Pista honesta: ¿qué devolvía tu
+// findOne del lunes cuando el id no existía? Contrástalo con lo que este test
 // exige. Un test que pasa sin esfuerzo a veces está verificando otra cosa.)
 //          R.P.:
 //
@@ -73,7 +83,7 @@
 // completos. Predice cuáles fallan y por qué.
 //          R.P.:
 //
-// Regla del día: el service de ayer NO se toca hasta que los tests hayan
+// Regla del día: el service del lunes NO se toca hasta que los tests hayan
 // hablado. Si un test falla porque el service no cumple el contrato, el FIX
 // vas a tener que decidirlo tú — y ahí está la lección. Cero tests falsos
 // ("que pasan sin verificar nada"): cada test tiene que poder fallar si el
@@ -111,13 +121,20 @@
 //     suite fantasma. ¿Qué es esa carpeta y por qué NO es un test tuyo?
 //     (Una línea — pista: syncthing.)
 //          R:
+// C.4 La mina de los controllers: tu OrdersService no recibe NADA en su ctor;
+//     OrdersController recibe ordersService. Bajo vitest tu spec del service
+//     PASA y los specs de controllers mueren en "cannot resolve dependencies".
+//     ¿Qué lee Nest de los constructores para saber QUÉ inyectar — y por qué
+//     al service no le hace falta? (Dos líneas. Familia TS1272: lo que
+//     evapora en runtime no lo puede leer nadie.)
+//          R:
 
 // ═══════════ CIERRE ═══════════
 // - Commit del día: tests + (si los tests te obligan) el fix del service →
 //   order-api (commit + push al cierre). La task → ts-inventory-cli.
-// - Anki: retomas la tanda (la de ayer saltó por sueño + 3 cartas nuevas
+// - Anki: retomas la tanda (la del lunes saltó por sueño + 3 cartas nuevas
 //   D26 + la carta D19 de PATCH/PartialType liberada — examen después de la
 //   clase, la clase fue ayer).
-// - Mínimo del día: Parte A (suite corriendo con npx vitest run y el veredicto
+// - Mínimo del día: Parte A (suite corriendo con el combo del header y el veredicto
 //   de cada predicción) + Anki. B y C ruedan a la tarde si la cabeza da.
 // - COMER A TIEMPO. AGUA.
