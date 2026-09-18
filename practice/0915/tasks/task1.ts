@@ -1,4 +1,31 @@
 // TASK 0915 — Día 27: Testing — unit (Vitest) + E2E (supertest)
+//
+// ═══ REIMU — CORRECCIONES D27 (jue 17 noche) — LEER HOY VIE 18 ANTES DE B/C ═══
+// (antes del Anki también: la cola creció — 3 días + 3 D26 + 1 D19 + 4 nuevas D27)
+//
+// ── REIMU (corrección): W1 — ACIERTO con fix incluido. Identificaste el 200-vacío
+// y el arreglado del miércoles. Era la respuesta que esta task quería destapar.
+// ── REIMU (corrección): W2 — llegaste con "404 y 403" y te corregiste SOLO al
+// verificar (400 pipe / 403 guard). Veredicto final correcto. El siguiente peldaño
+// del reflejo: verificar ANTES de escribir la primera respuesta, no después.
+// ── REIMU (corrección): W3 — correcta, y sí: estaba en el header a propósito.
+// Leer el header antes de arrancar paga. Punto entero.
+// ── REIMU (corrección): R.P.1 — veredicto correcto ("Pasa"), pero te quedaste a
+// media predicación: el PUNTO era el contraste. Este mismo test contra el service
+// del LUNES habría salido ROJO (findOne devolvía undefined, nadie lanzaba nada) —
+// este test te habría cazado el bug del 200-vacío SIN abrir un solo curl. Eso es
+// lo que la máquina te compra. Tu "con todos los errores" es esa historia al revés.
+// ── REIMU (corrección): R.P.2 — quemada: corriste la suite a las 22:02 (diagnóstico)
+// antes de contar, así que ya no quedaba nada que predecir. Y "las 10" incluía la
+// del scaffold (de Santiago) — las TUYAS son 9. Regla que queda: la predicción se
+// escribe ANTES de la primera corrida, aunque sea "ni idea". Registrada así, sin
+// rescate — no penaliza la nota de hoy; lo que se perdió fue la medición.
+// ── REIMU (corrección): PARTE A — suite 10/10 verde (verificada por mí, 23:54).
+// Para la entrevista te llevas: toEqual aprendido DEL ERROR (leíste el mensaje
+// completo — ese es el oficio), toThrow(NotFoundException) con la CLASE (rechaza
+// explosiones ajenas), y el test falso #2 cazado SOLO ("verde vacío"). Deuda
+// chica documentada: findAll por length verifica "cuántos", no "exactamente
+// cuáles" — decisión tuya, defendida, válida.
 // ESTADO: CALIBRADA + PRE-VERIFICADA Sep 17 (copia /tmp, vitest 5 real):
 // suite de referencia del contrato = 10/10 contra el service actual del repo.
 // Las minas de abajo fueron re-verificadas UNA POR UNA el jue 17 — la del
