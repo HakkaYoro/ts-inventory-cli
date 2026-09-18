@@ -36,14 +36,14 @@
 // 1. Ayer tu findOne devuelve `Order | undefined` cuando el id no existe.
 //    ¿Qué responde el cliente por HTTP en ese caso? (Relee el contrato de la
 //    task 0914: "Ver uno — No existe → 404". ¿Tu service lo cumple?)
-//          R:
+//          R: Cómo no existe tira Undefined, y lanza 200. Es un bug, y ya lo corregí, le quité el undefined y dejé el throw.
 // 2. Dos status que ayer mezclaste en UNA respuesta: ¿qué responde el
 //    ValidationPipe global ante un body inválido, y qué responde el guard
 //    ante un header faltante? Dos números, el orden de la fila te ayuda.
-//          R:
+//          R: 404 y 403. Deja verifico... 400 Bad Request el Pipe y 403 Forbidden el Guard. Listo, ya no se me olvida creo.
 // 3. `npm test` corre jest. Tu spec es de Vitest. ¿Qué comando corre TUS
 //    tests? (Una línea — la mina del header te la da casi gratis.)
-//          R:
+//          R: "npx vitest run"  me lo dijiste más arriba no?
 
 // ═══════════ PARTE A — ESCRIBIR: tests unitarios de OrdersService ═══════════
 
@@ -75,13 +75,13 @@
 // contra tu service del lunes? ¿Por qué? (Pista honesta: ¿qué devolvía tu
 // findOne del lunes cuando el id no existía? Contrástalo con lo que este test
 // exige. Un test que pasa sin esfuerzo a veces está verificando otra cosa.)
-//          R.P.:
+//          R.P.: Pasa, pero con todos los errores, luego especifiqué que era "NotFoundException" solamente.
 //
 // PREDICCIÓN (primera corrida): cuando corras toda la suite por primera vez,
 // ¿cuántos tests pasan y cuántos fallan? (Cuéntalos ANTES de correr.) Los
 // que fallen te están señalando algo de tu contrato de ayer — léelos
 // completos. Predice cuáles fallan y por qué.
-//          R.P.:
+//          R.P.: Las 10 pasaron. No sé de que hablas lmao.
 //
 // Regla del día: el service del lunes NO se toca hasta que los tests hayan
 // hablado. Si un test falla porque el service no cumple el contrato, el FIX
