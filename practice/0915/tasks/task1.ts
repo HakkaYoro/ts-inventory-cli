@@ -1,5 +1,8 @@
 // TASK 0915 — Día 27: Testing — unit (Vitest) + E2E (supertest)
 //
+// ═══ REIMU (corrección B/C — Sep 18, vie): 7 bloques nuevos bajo B.1-C.4.
+// La de C.2 era la trampa del día: la respuesta estaba en TU propio spec
+// (beforeEach). Batsus de hoy salen de estas 7. ═══
 // ═══ REIMU — CORRECCIONES D27 (jue 17 noche) — LEER HOY VIE 18 ANTES DE B/C ═══
 // (antes del Anki también: la cola creció — 3 días + 3 D26 + 1 D19 + 4 nuevas D27)
 //
@@ -123,38 +126,91 @@
 // Tres preguntas, una línea cada una:
 // B.1 ¿Qué hace Test.createTestingModule() — para qué sirve el objeto que
 //     devuelve y qué hace .compile()? (Es el molde de tu spec y del E2E.)
-//          R:
+//          R: CreateTestingModule crea un módulo temporal con las dependencias que le inyectes y luego el .compile lo compila en runtime.
+//          ── REIMU (corrección, Sep 18): ACIERTO completo, ambas mitades. El TestingModule
+//          es un mini contenedor de DI de verdad (el "gerente" de D16 en versión
+//          laboratorio) con un superpoder que el real no te da: overrideProvider()
+//          para meter un mock donde iba algo real. compile() instancia y conecta
+//          TODO igual que NestFactory.create() en main.ts — pero en miniatura y
+//          bajo tu control. Línea de entrevista: "compile() bootstrapea, get()
+//          pide al contenedor".
 // B.2 ¿Qué es module.get<OrdersService>(OrdersService) en tu spec? ¿De dónde
 //     sale la instancia que te da? (Conexión con el gerente del D16.)
-//          R:
+//          R: Estoy haciendo un módulo temporal usando OrdersService sin controller. Se le pone el alias service para mayor comodidad. Y sale del orders.service.ts.
+//          ── REIMU (corrección, Sep 18): ACIERTO con un matiz. La instancia NO "sale de
+//          orders.service.ts" (el archivo nadie lo abre): la construyó TU módulo
+//          temporal al compilar — providers: [OrdersService] la registró, y
+//          .get(OrdersService) se la pide al contenedor de ESE módulo. Es
+//          literalmente el gerente del D16: tú pides por nombre (la clase es el
+//          token), él entrega la instancia que administra. El alias `service` es
+//          puramente ergonomía — bien visto.
 // B.3 Tu main.ts registra globales con app.useGlobalPipes/Interceptors/Filters
 //     (ValidationPipe, LogInterceptor, ExceptionFilter). Si en un E2E creas
 //     la app con createTestingModule+createNestApplication, ¿esos globales
 //     aplican? ¿Cuál global SÍ aplica y por qué? (Mira dónde vive el guard:
 //     app.module providers con APP_GUARD — contraste con main.ts.)
-//          R:
+//          R: No lo especifica los docs. Pero debería ejecutarse con las 3, porqué? Porque es un test de "Mundo Real", tal cómo lo usaría el usuario si intentara hacer una petición a través del endpoint en el servidor.
+//          ── REIMU (corrección, Sep 18): Mitad y mitad — y la mitad buena es la honesta:
+//          cierto, los docs NO lo especifican (bien leído, no inventaste). La
+//          predicción no: tu E2E con createTestingModule JAMÁS ejecuta main.ts —
+//          solo lee los metadatos del AppModule. Las 3 globales de main.ts
+//          (ValidationPipe, LogInterceptor, ExceptionFilter) quedan FUERA; el
+//          guard SÍ aplica porque vive registrado como provider (APP_GUARD) DENTRO
+//          del app.module. Verificado con corrida real el miércoles. Tu "mundo
+//          real" es lo que el E2E QUIERE imitar; el harness imita hasta donde
+//          llega el módulo. Si quieres las 3 adentro, las registras tú.
 
 // ═══════════ PARTE C — cierre conceptual ═══════════
 
 // C.1 Unit test vs E2E: ¿qué verifica cada uno, con tus archivos como
 //     ejemplo (orders.service.spec.ts vs un E2E que le pega a la API)?
 //     Dos líneas.
-//          R:
+//          R: Unit Test es para probar que tu service cumpla las reglas de lo que programaste, ejemplo, lo que construí ayer. En el caso de E2E, se asegura de que esas reglas funcionen en el endpoint y no solo contra tu código.
+//          ── REIMU (corrección, Sep 18): ACIERTO. Una palabra más afilada para la entrevista:
+//          el unit test verifica las REGLAS del service (sin HTTP, sin server —
+//          tu Lista del CLI), el E2E verifica el CONTRATO por la puerta del
+//          usuario: endpoint + controller + pipes + guards + status codes.
+//          "No solo tu código" = exacto.
 // C.2 Tu service es singleton con estado (el array). Si un test crea un
 //     pedido y el siguiente test hace findAll, ¿qué ve? ¿Qué tendrías que
 //     hacer para que cada test arranque LIMPIO? Dos líneas.
-//          R:
+//          R: Primero, ve lo que se haya creado dentro de la prueba (Dentro de un it). Si no quieres que esos datos "basura" se queden en memoria, solo tienes que hacer otro it.
+//          ── REIMU (corrección, Sep 18): ACÁ ESTABA LA TRAMPA DEL DÍA y el `it` no era: los
+//          it NO aíslan nada. La respuesta vivía en TU spec, en el beforeEach:
+//          recompilas el módulo y service = INSTANCIA NUEVA antes de CADA test →
+//          array vacío garantizado. Si hubieras creado el service UNA sola vez
+//          fuera del beforeEach (o fuera el singleton real de producción), el
+//          test 2 VERÍA los pedidos del test 1. Línea de entrevista: "el
+//          aislamiento no lo da vitest, lo da mi beforeEach — sin él, el
+//          singleton filtra estado entre tests". Esto te lo pregunta cualquier
+//          senior.
 // C.3 En el header hay una mina: vitest escanea .stversions/ y falla una
 //     suite fantasma. ¿Qué es esa carpeta y por qué NO es un test tuyo?
 //     (Una línea — pista: syncthing.)
-//          R:
+//          R: Simplemente, vitest escanea todos los spec y los ejecuta. Al ser un spec que técnicamente no tiene nada que ver y no tiene las rutas reales para los tests, tira error. Eso es lo que me imagino que ocurre. Culpa de Syncthing.
+//          ── REIMU (corrección, Sep 18): Describiste el SÍNTOMA (escanea y ejecuta el spec
+//          ajeno → explota), pero la pregunta era QUÉ ES esa carpeta: el backup
+//          de versiones de Syncthing — cada vez que sincroniza un cambio, guarda
+//          la copia VIEJA del archivo ahí. No es código fuente: es un espejo
+//          congelado de tu repo de ayer, que nadie va a mantener jamás (por eso
+//          el fix es --exclude o borrarla). Tu "culpa de Syncthing" del final:
+//          sí — pero esa era la pregunta, no el pie.
 // C.4 La mina de los controllers: tu OrdersService no recibe NADA en su ctor;
 //     OrdersController recibe ordersService. Bajo vitest tu spec del service
 //     PASA y los specs de controllers mueren en "cannot resolve dependencies".
 //     ¿Qué lee Nest de los constructores para saber QUÉ inyectar — y por qué
 //     al service no le hace falta? (Dos líneas. Familia TS1272: lo que
 //     evapora en runtime no lo puede leer nadie.)
-//          R:
+//          R: Lee los types dentro de los importes. Explota porque en runtime los types mueren, ya que NestJS los ve como inecesarios, ya que al compilar, verifica que las reglas del type se cumplan, cuando ve que se cumplen, mata al type. En cambio, si se importa no como un type, se mantiene en todo momento en memoria.
+//          ── REIMU (corrección, Sep 18): La mitad que agarraste es la familia correcta: los
+//          types evaporan en runtime. Pero el mecanismo es otro: Nest lee de los
+//          constructores la metadata design:paramtypes — anotaciones que el
+//          compilador ESCRIBE solo si emitDecoratorMetadata está prendido. vitest
+//          sin config de build NO la emite → Nest mira tu ctor y ve "no sé qué
+//          inyectar" → "cannot resolve dependencies". Tu OrdersService tiene el
+//          ctor VACÍO: no hay nada que resolver, por eso tu spec vive y la del
+//          controller muere. (Tu "importado como type se muere, si no se
+//          mantiene" es la mina TS1272 del D23 — misma familia, buena conexión.)
 
 // ═══════════ CIERRE ═══════════
 // - Commit del día: tests + (si los tests te obligan) el fix del service →
