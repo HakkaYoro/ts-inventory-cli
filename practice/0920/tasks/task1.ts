@@ -1,0 +1,147 @@
+// TASK 0920 — Día 28: Configuration (@nestjs/config) + TypeORM intro (SQLite)
+//
+// ═══ REIMU (lun 21): el plan se movió DOS días más — el domingo se fue en
+// la alianza 50/50 con Santiago + el documento MEXT, y el lunes en la UAH
+// (te eximieron de las pasantías: sistema en Notion con Santiago) con la
+// batería al 1% (telemetría de Marisa aceptada — cero culpa). D28 corre HOY
+// MARTES 22 y D29 (Relaciones + Swagger + push) cierra Fase 2 el miércoles.
+// Todo absorbido en el calendario: ETA movida a mar 3-nov, techo ~9-nov.
+//
+// ESTADO: diseñada y pre-verificada sáb 19 (copia en /tmp: tsc limpio,
+// batería curl 9/9 contra server real, suite con repo mockeado 3/3, y LA
+// prueba de persistencia: pedido creado → server matado → server relevado
+// → el pedido SIGUE ahí).
+//
+// CONTEXTO: tu order-api vive con un array EN MEMORIA (orders.service.ts).
+// Ese array muere cada vez que el server se apaga. Hoy le das a la API dos
+// cosas que un backend de verdad exige: configuración externa (.env) y
+// persistencia real (SQLite vía TypeORM). El CRUD, el guard, el pipe, el
+// filtro, tu suite de ayer: TODO se queda — cambia lo que hay DEBAJO.
+//
+// Minas del día (verificadas hoy en la copia):
+// - `npm test` corre JEST y miente. Tu suite corre con:
+//   npx vitest run --exclude "**/.stversions/**" src/orders/orders.service.spec.ts
+// - sqlite3 (el paquete de los tutoriales viejos) está desactualizado y en
+//   esta máquina el npm bloquea install scripts (binding nativo sin bajar).
+//   Si al arrancar el server truena con error de binding/node-gyp:
+//   npm uninstall sqlite3 && npm install better-sqlite3
+//   y en forRoot el type es "better-sqlite3". (Si instala limpio, no toques
+//   nada — el driver moderno es la mejor decisión de todos modos.)
+// - Puerto zombi (familia D19): pkill -f "[d]ist/main" + ss -ltnp | grep 3000.
+// - NO corras npm run format.
+// - El .env NO se commitea (ya vive en .gitignore — verifica con git status
+//   que no aparece). Para eso existe .env.example: la plantilla SIN secretos.
+//
+// ═══════════ WARM-UP (sin pistas — una línea cada una) ═══════════
+//
+// 1. Si el server se reinicia ahora mismo (Ctrl+C y npm run start), ¿qué
+//    pasa con los pedidos que ya creaste? ¿Dónde viven HOY?
+//      R: No viven en ningún lado, se mueren en memoria. Ojo, suponiendo que no te refieres a los tests con los pedidos hardcodeados.
+// 2. Tu guard quema el string "orden-secreta" en el código, y el repo se
+//    sube a GitHub. ¿Por qué eso es un problema?
+//          R:
+// 3. Tu spec de ayer construye el módulo con providers: [OrdersService].
+//    Si el service pasa a necesitar un Repository inyectado en su
+//    constructor, ¿qué le falta a ESE módulo del spec? ("Ni idea" vale.)
+//
+// ═══════════ PARTE A — CONFIG: el guard deja de quemar strings ═══════════
+//
+// 1. npm install @nestjs/config
+// 2. Crea .env en la raíz de order-api con dos líneas (PORT y API_KEY con
+//    el valor de siempre) y .env.example idéntico pero con un valor FALSO
+//    en API_KEY (la plantilla que sí se commitea).
+// 3. En app.module.ts: ConfigModule.forRoot({ isGlobal: true }) como primer
+//    import del módulo. (Andamio dado. El isGlobal resuelve el mismo debate
+//    de "¿quién importa qué?" de los módulos: con isGlobal, CUALQUIER
+//    módulo puede inyectar ConfigService sin importar nada.)
+// 4. El guard: inyecta ConfigService por constructor y que la clave
+//    esperada salga de config.get("API_KEY"). Cero strings quemados.
+//    Decide tú el caso borde: ¿qué pasa si la clave no está definida?
+//    (Esa decisión es de seguridad: fail-open vs fail-closed.)
+//
+// BATERÍA (predicciones ESCRITAS antes de cada curl — las 4):
+// - P1: curl sin header → ¿código?
+//          R.P.:
+// - P2: curl con el header correcto → ¿200 o 403? ¿POR QUÉ? (Sigue la
+//   cadena completa: .env → ConfigModule → guard.)
+//          R.P.:
+// - P3: cambia el valor de API_KEY en .env, guarda, y corre el MISMO curl
+//   SIN reiniciar nada → ¿qué esperas? Después reinicia el server y prueba
+//   otra vez. (start:dev observa archivos .ts — ¿observa .env?)
+//          R.P.:
+// - P4: borra .env (sí, bórralo) y llama con CUALQUIER header → ¿la API
+//   queda ABIERTA o CERRADA? ¿Qué parte de TU implementación decide eso?
+//   Después restaura el .env.
+//          R.P.:
+//
+// ═══════════ PARTE B — TYPEORM: el array se vuelve tabla ═══════════
+//
+// 1. npm install @nestjs/typeorm typeorm better-sqlite3
+// 2. La entidad: la clase Order ya existe en
+//    src/orders/entities/order.entity.ts con id/cliente/item/cantidad.
+//    Conviértela en entidad de verdad: @Entity() en la clase,
+//    @PrimaryGeneratedColumn() en id, @Column() en el resto. EL MISMO
+//    nombre de clase y LOS MISMOS cuatro campos: tu spec de ayer no debe
+//    enterarse del cambio.
+// 3. OrdersModule: TypeOrmModule.forFeature([Order]) en imports. (El
+//    forFeature es el "esta entidad vive AQUÍ" — registro local del
+//    módulo, la misma lógica de siempre.)
+// 4. app.module.ts — andamio dado (el forRoot es LA conexión global):
+//      TypeOrmModule.forRoot({
+//        type: "better-sqlite3",
+//        database: "order-data.sqlite",
+//        autoLoadEntities: true,
+//        synchronize: true,
+//      }),
+// 5. El service: fuera el array, adentro el Repository. Constructor con
+//    @InjectRepository(Order). Cada método delega en su primo del
+//    Repository (la API del repo es el espejo de lo que ya haces: para
+//    crear+guardar, listar, buscar uno por campo, borrar — los ves con
+//    autocompletado y docs). Los 404 de findOne/update/remove CON EL
+//    MISMO MENSAJE de siempre ("Baka!" incluido): tu filtro y tus tests
+//    dependen de él. Y toda la familia se vuelve async (familia D11:
+//    async/await + Promise).
+//
+// PREDICCIÓN ESTRELLA (ANTES de correr CUALQUIER cosa tras el paso 4):
+// cuando corras tu suite de ayer (10/10) contra el service nuevo, ¿qué
+// pasa: verde, roja, o explota? ¿DÓNDE exactamente y qué ERROR textual?
+// (Pista honesta: tu spec registra OrdersService y NADA más en providers.
+// El service nuevo pide algo en su constructor. ¿Quién se lo da?)
+//          R.P.:
+//
+// Después del veredicto, convierte el spec: providers: [OrdersService,
+// { provide: getRepositoryToken(Order), useValue: {...} }] — el useValue
+// lo decides TÚ: qué métodos del repo fingir y qué devuelve cada uno.
+// Mínimo verificable: should be defined + create delega y devuelve el
+// pedido con id + findOne inexistente lanza. OJO: los métodos del service
+// ahora son async — las expectativas cambian de forma (await +
+// rejects.toThrow: familia D11 otra vez).
+//
+// PREDICCIÓN (primera corrida del spec convertido): ¿cuántos verdes?
+//          R.P.:
+//
+// LA PRUEBA DEL DÍA (al final de todo): crea un pedido por curl, MATA el
+// server (Ctrl+C), levántalo otra vez, GET /orders. ¿Está? Eso era
+// imposible ayer. Guarda esa evidencia para C.4.
+//
+// ═══════════ PARTE C — cierre conceptual ═══════════
+//
+// C.1 ¿Qué problema real de tu guard de ayer resuelve @nestjs/config?
+//     Dos líneas.
+// C.2 Entity vs DTO: los dos describen "un pedido". ¿Para qué vive cada
+//     uno y por qué NO son lo mismo? (Uno vive pegado a la DB, el otro
+//     describe una petición HTTP. Dos líneas.)
+// C.3 synchronize: true — ¿qué hace por ti y por qué es cómodo en
+//     desarrollo? ¿Por qué NUNCA en producción? (1-2 líneas.)
+// C.4 Cuenta la prueba del día: ¿qué viste al reiniciar el server y por
+//     qué era imposible con el array? Dos líneas — esta respuesta es la
+//     que va en la entrevista.
+//
+// ═══════════ CIERRE ═══════════
+// - Commit del día → order-api (package.json + .env.example + entity +
+//   módulos + service + spec) y push al cierre. La task → ts-inventory-cli.
+// - Anki: tanda del día + 2-3 cartas nuevas de D28 (ConfigModule/
+//   ConfigService, forFeature/getRepositoryToken, synchronize).
+// - Mínimo del día: warm-up + Parte A completa (con sus 4 predicciones) +
+//   Anki. La Parte B es la sesión de la tarde.
+// - COMER A TIEMPO. AGUA.
