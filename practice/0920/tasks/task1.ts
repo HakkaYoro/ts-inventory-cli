@@ -1,11 +1,12 @@
 // TASK 0920 — Día 28: Configuration (@nestjs/config) + TypeORM intro (SQLite)
 //
-// ═══ REIMU (mar 22): asueto médico — infección viral + congestión sinusal
-// (telemetría de Marisa aceptada, cero culpa: la claridad horizontal no
-// cuenta como batería). D28 corre HOY MIÉRCOLES 23 y D29 (Relaciones +
-// Swagger + push) cierra Fase 2 el VIERNES 25 (el jueves libre queda como
-// siempre). Todo absorbido en el calendario: ETA movida a mié 4-nov,
-// techo ~10-nov.
+// ═══ REIMU (jue 24): el virus del martes pasó factura — mié 23 también
+// fue reposo (día LIBRE, cero culpa), y hoy jueves es el libre de
+// siempre + paseo con amigos (sol y caminata: buena decisión, costo
+// cero — tu warm-up 1 ya respondido desde el miércoles cuenta como
+// arranque). D28 corre HOY VIERNES 25 y D29 (Relaciones + Swagger +
+// push) cierra Fase 2 el SÁBADO 26 en sesión larga. Todo absorbido:
+// ETA movida a vie 6-nov, techo ~12-nov.
 //
 // ESTADO: diseñada y pre-verificada sáb 19 (copia en /tmp: tsc limpio,
 // batería curl 9/9 contra server real, suite con repo mockeado 3/3, y LA
