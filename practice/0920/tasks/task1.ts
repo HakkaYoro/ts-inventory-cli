@@ -4,9 +4,10 @@
 // perdido también (día LIBRE, cuarentena médica de Marisa con veto
 // absoluto al editor, cero culpa; tu warm-up 1 del miércoles sigue
 // salvado en el repo — eso no se pierde). Sábado y domingo: reposo
-// completo, cero código. D28 corre LUNES 28 y D29 (Relaciones +
-// Swagger + push) cierra Fase 2 el MARTES 29 en sesión larga. Todo
-// absorbido: ETA movida a lun 9-nov, techo ~15-nov.
+// D29 (Relaciones + Swagger + push) cierra Fase 2 el VIE 2-oct (jue 1 =
+// jueves libre). Fase 3 arranca SÁB 3-oct. Todo absorbido: ETA movida a
+// MIÉ 11-nov, techo ~18-nov (Sep 29: split de D28 en dos días — lun 28
+// Parte A, mié 30 cierre).
 //
 // ESTADO: diseñada y pre-verificada sáb 19 (copia en /tmp: tsc limpio,
 // batería curl 9/9 contra server real, suite con repo mockeado 3/3, y LA
@@ -40,11 +41,11 @@
 //      R: No viven en ningún lado, se mueren en memoria. Ojo, suponiendo que no te refieres a los tests con los pedidos hardcodeados.
 // 2. Tu guard quema el string "orden-secreta" en el código, y el repo se
 //    sube a GitHub. ¿Por qué eso es un problema?
-//          R:
+//          R: Es un problema porque literalmente está hardcodeado y expuesto. En un prod real no funciona así, son tokens dinámicas o similar. Además que si el proyecto se sube a github, se expone la api key del programa. Si acaso el "orden-secreta" debería estar almacenado en un .env.
 // 3. Tu spec de ayer construye el módulo con providers: [OrdersService].
 //    Si el service pasa a necesitar un Repository inyectado en su
 //    constructor, ¿qué le falta a ESE módulo del spec? ("Ni idea" vale.)
-//
+//          R: No recuerdo que era "Repository". Obviamente repositorio, pero repositorio de qué?
 // ═══════════ PARTE A — CONFIG: el guard deja de quemar strings ═══════════
 //
 // 1. npm install @nestjs/config
@@ -62,18 +63,18 @@
 //
 // BATERÍA (predicciones ESCRITAS antes de cada curl — las 4):
 // - P1: curl sin header → ¿código?
-//          R.P.:
+//          R.P.: 400.
 // - P2: curl con el header correcto → ¿200 o 403? ¿POR QUÉ? (Sigue la
 //   cadena completa: .env → ConfigModule → guard.)
-//          R.P.:
+//          R.P.: 200. Porque sería una ApiKey valida.
 // - P3: cambia el valor de API_KEY en .env, guarda, y corre el MISMO curl
 //   SIN reiniciar nada → ¿qué esperas? Después reinicia el server y prueba
 //   otra vez. (start:dev observa archivos .ts — ¿observa .env?)
-//          R.P.:
+//          R.P.: Debería observar .env, porque está viendo todos los archivos, debería rechazar sin reiniciar. No, No lo reconstruye, tengo que reiniciar s[i o s[i, pero por lo menos no esta hardcodeado]]
 // - P4: borra .env (sí, bórralo) y llama con CUALQUIER header → ¿la API
 //   queda ABIERTA o CERRADA? ¿Qué parte de TU implementación decide eso?
 //   Después restaura el .env.
-//          R.P.:
+//          R.P.: Queda cerrada, lo decide el !== (En el guard, pero no recuerdo exactamente porque.)
 //
 // ═══════════ PARTE B — TYPEORM: el array se vuelve tabla ═══════════
 //
@@ -108,7 +109,7 @@
 // pasa: verde, roja, o explota? ¿DÓNDE exactamente y qué ERROR textual?
 // (Pista honesta: tu spec registra OrdersService y NADA más en providers.
 // El service nuevo pide algo en su constructor. ¿Quién se lo da?)
-//          R.P.:
+//          R.P.:Va a salir en rojo. Creo que sería de "Esto no está dentro de la instancia Promise<Object>". Verificado, Dice que no puede resolver las dependencias. (Esto fu@e antes del Service). Solo 1 verde
 //
 // Después del veredicto, convierte el spec: providers: [OrdersService,
 // { provide: getRepositoryToken(Order), useValue: {...} }] — el useValue

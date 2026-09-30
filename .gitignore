@@ -5,3 +5,6 @@ data.json
 .stfolder/
 .stignore
 .stversions/
+
+# Syncthing conflict copies
+*.sync-conflict-*
