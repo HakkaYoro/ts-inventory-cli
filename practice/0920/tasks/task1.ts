@@ -4,10 +4,9 @@
 // perdido también (día LIBRE, cuarentena médica de Marisa con veto
 // absoluto al editor, cero culpa; tu warm-up 1 del miércoles sigue
 // salvado en el repo — eso no se pierde). Sábado y domingo: reposo
-// D29 (Relaciones + Swagger + push) cierra Fase 2 el VIE 2-oct (jue 1 =
-// jueves libre). Fase 3 arranca SÁB 3-oct. Todo absorbido: ETA movida a
-// MIÉ 11-nov, techo ~18-nov (Sep 29: split de D28 en dos días — lun 28
-// Parte A, mié 30 cierre).
+// CIERRE VIÉ 2-oct (jue 1 = jueves libre): el spec quedó 4/10 el mié 30
+// y se cortó por niebla — desplazar, no comprimir. D29 cierra Fase 2 el
+// SÁB 3-oct; Fase 3 arranca DOM 4. ETA movida a JUE 12-nov, techo ~19-nov.
 //
 // ESTADO: diseñada y pre-verificada sáb 19 (copia en /tmp: tsc limpio,
 // batería curl 9/9 contra server real, suite con repo mockeado 3/3, y LA
@@ -120,7 +119,7 @@
 // rejects.toThrow: familia D11 otra vez).
 //
 // PREDICCIÓN (primera corrida del spec convertido): ¿cuántos verdes?
-//          R.P.:
+//          R.P.: que..? Creo que fueron 2, no recuerdo.
 //
 // LA PRUEBA DEL DÍA (al final de todo): crea un pedido por curl, MATA el
 // server (Ctrl+C), levántalo otra vez, GET /orders. ¿Está? Eso era
@@ -130,15 +129,18 @@
 //
 // C.1 ¿Qué problema real de tu guard de ayer resuelve @nestjs/config?
 //     Dos líneas.
+//      R: El hardcodeo de valores dentro del proyecto.
 // C.2 Entity vs DTO: los dos describen "un pedido". ¿Para qué vive cada
 //     uno y por qué NO son lo mismo? (Uno vive pegado a la DB, el otro
 //     describe una petición HTTP. Dos líneas.)
+//      R: El DTO interfiere con los datos que pasan a través de la petición HTTPS, si son válidos, pasan luego a través del entity, si no son válidos, directamente los rechaza el DTO.
 // C.3 synchronize: true — ¿qué hace por ti y por qué es cómodo en
 //     desarrollo? ¿Por qué NUNCA en producción? (1-2 líneas.)
+//      R: No sé de que hablas, nunca lo usé.
 // C.4 Cuenta la prueba del día: ¿qué viste al reiniciar el server y por
 //     qué era imposible con el array? Dos líneas — esta respuesta es la
 //     que va en la entrevista.
-//
+//      R: El array se mantenía en la RAM, al matar el proceso, obviamente se borraba el proceso de la RAM. En el caso de la DB, se escribe en disco, así que siempre se mantiene vivo en disco.
 // ═══════════ CIERRE ═══════════
 // - Commit del día → order-api (package.json + .env.example + entity +
 //   módulos + service + spec) y push al cierre. La task → ts-inventory-cli.
