@@ -22,22 +22,22 @@
 //    desarrollo y MAL en producción. (Pista de verificación, no de
 //    respuesta: ¿quién creó la tabla `orders`? ¿Tú escribiste algún
 //    CREATE TABLE?)
-//           R.P.:
+//           R.P.: Syncrhonize se encagra de crear una tabla automáticamente. Pero esto es peligroso, ya que puede dañar una base de datos previamente creadoa si se altera algo.
 //
 // 2. Tu spec quedó 10/10 ayer. Dos preguntas de lo que TÚ escribiste:
 //    a) En tu test de findAll: `repo.find.mockResolvedValueOnce([])` y
 //       luego `mockResolvedValueOnce([pedido1, pedido2])`. ¿Por qué
 //       hacen falta DOS grabaciones para el MISMO método?
 //    b) ¿Qué devuelve un `vi.fn()` sin ninguna grabación?
-//           R.P.: a)
-//                 b)
+//           R.P.: a) Porque el primero setea un array de objetos vacío, ese es para la prueba de findAll vacío, el otro, es para findall con 2 entradas/objetos.
+//                 b) Undefined.
 //
 // 3. El test de remove (el de las 18:xx de ayer) usa
 //    `mockImplementation` con un array `pedidos` de verdad adentro.
 //    Tus otros 9 tests graban respuestas fijas. Nombra UNA diferencia
 //    real entre "grabar respuestas fijas" y "implementar con estado"
 //    — qué PUEDE hacer el segundo que el primero no.
-//           R.P.:
+//           R.P.: Tuve que revisar el spec. Okay, la diferencia principal es que si se hace con respuestas fijas, no hay nada que realmente se asegure que de verdad el test sea real. En cambio implementar el estado, se asegura que con cualquier dato que le pases, se cumpla el test de forma dinámica y precisa.
 //
 // ═══════════ PARTE A — SWAGGER: la API se explica sola ═══════════
 //
@@ -65,7 +65,7 @@
 // listadas. ¿Cuál va a faltar o fallar al intentar EJECUTARLO — o
 // ninguna? (La clue está en el punto 4 y en el header que tu guard
 // exige.)
-//           R.P.:
+//           R.P.: Debería fallar al ejecutar, porque no le estoy pasando la api key al curl. Sip, exactamente, comprobado.
 //
 // ═══════════ PARTE B — RELACIONES: un pedido con dueño ═══════════
 //
