@@ -23,17 +23,17 @@
 //    (a) qué le falta al Testing Module que el service ahora pide;
 //    (b) qué tipo espera el DTO nuevo que tus fixtures no le dan.
 //    NO lo arregles aún — solo el diagnóstico escrito.
-//           R.P.:
+//           R.P.: Lo primero es que tengo que colocar el nuevo repositorio para clientes, ya luego de eso sería acomodar uno que otro test. Y deberían fallar los dos create.
 //
 // 2. En una línea: ¿qué es un "contrato" entre un spec y su
 //    service, y quién rompió el contrato ayer — el spec o el
 //    service?
-//           R.P.:
+//           R.P.: El service. Porque integra dos repos ahora en vez de uno.
 //
 // 3. Rompehielos React, a ciegas, sin googlear: ¿qué crees que es
 //    un "componente" en React? Una línea, intuición pura. No se
 //    penaliza "ni idea".
-//           R.P.:
+//           R.P.: Ni idea.
 //
 // ═══════════ PARTE A — LA DEUDA: renegociar el spec (editor SÍ) ═══════════
 //
@@ -60,7 +60,7 @@
 // quedan verdes arreglando SOLO los pasos 1 y 2, sin escribir
 // guiones nuevos? Apúntala, ejecuta la suite, y explica la
 // diferencia si la hay.
-//           R.P.:
+//           R.P.: Dos en rojo nomás. Como dije antes, los dos create debrían estar mal.
 //
 // ═══════════ PARTE B — REACT NACE: order-frontend ═══════════
 //
