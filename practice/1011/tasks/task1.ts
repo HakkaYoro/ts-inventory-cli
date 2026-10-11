@@ -12,6 +12,11 @@
 // son parte de la task, no castigo. Si el navegador no está abierto:
 // cd order-frontend && npm run dev.
 //
+// ═══ REIMU (corrección) — Oct 11, cierre D31. LEER MAÑANA antes del
+// warm-up: 5 bloques (4 correcciones + W1 saldado en vivo, bien). La
+// urgente: segunda línea de TU B.2 — sigue creyendo que el número
+// vive en la llamada; tu W1 corregido ya sabe la verdad. ═══
+//
 // ═══════════ WARM-UP (sin editor — responde en este archivo) ═══════════
 //
 // 0. COBRO DEL VIERNES: abre Anki (yo cargo las 2 cartas d30 al
@@ -24,14 +29,24 @@
 // 1. En una línea: en TU Tarjeta, ¿quién es el dueño del contenido
 //    — App (el que llama) o Tarjeta (el componente)? Viernes lo
 //    pagaste en carne propia.
-//           R.P.:
+//           R.P.: El App.
+//          ── REIMU (Oct 11): Corregida EN VIVO, en plena sesión, tras las
+//          pistas — y sin que te dijera la respuesta. Así se cierra un
+//          hueco el mismo día que aparece. Tu carta molde-vs-llamada y
+//          esta línea ya cuentan la misma historia.
 //
 // 2. Rompehielos (intuición pura, no se penaliza "ni idea"): el
 //    botón del template decía "Count is {count}" y tenía un
 //    onClick. Cuando le hacían click, el número en pantalla
 //    cambiaba solo. ¿Qué crees que tenía que existir GUARDADO en
 //    algún lado para que eso funcionara, y quién lo actualizaba?
-//           R.P.:
+//           R.P.: Una función con una variable let.
+//          ── REIMU (corrección, Oct 11): Apuntaste al sitio correcto (algo
+//          guardado que alguien actualiza), pero una let normal NO repinta
+//          la pantalla — es el contador ROTO con el que abre A.1. Lo que
+//          faltaba era un estado que React VIGILA: useState. Hoy lo
+//          escribiste con tus manos: la memoria es el par [valor,
+//          actualizador], y el que actualiza es setClicks.
 //
 // ═══════════ PARTE A — LECTURA PRIMERO (nueva regla) ═══════════
 //
@@ -41,14 +56,20 @@
 //     la pantalla) y luego lo arregla. Es el mismo truco del
 //     the-old-way.html: ver lo que NO funciona primero.
 //     Al terminar, escribe en una línea TU definición de "estado":
-//           R.P.:
+//           R.P.: El estado es básicamente un Index con todo lo que pueda haber en un componente. En el caso del ejemplo, el estado comienza en cero. Es cómo un enum en Typescript, uego según la enumeración, va cambiando según el estado del componente.
+//          ── REIMU (corrección, Oct 11): Un enum no cambia solo — un estado
+//          sí. Definición literal de una frase: el estado es la MEMORIA del
+//          componente entre renderizaciones, lo que recuerda de la última
+//          vez que se pintó. Contador recuerda "voy por 3" y por eso el
+//          próximo click sale 4. La let normal se olvida entre pintadas
+//          (A.1, el roto de arriba).
 //
 // A.2 Lee https://react.dev/learn/responding-to-events
 //     hasta la sección "Naming event handler props" (no incluida).
 //     Ojo con la segunda sección: te muestra que una prop puede
 //     ser una FUNCIÓN — el onClick={flecha} que viste el jueves.
 //     Una línea: qué es un "event handler":
-//           R.P.:
+//           R.P.: Un event handler es básicamente algo que reacciona según una acción o evento que ocurra una página. En el caso del ejemplo, al hacer click en el botón (el evento) muestra un mensaje en pantalla.
 //
 // ═══════════ PARTE B — CONTADOR: la página recuerda (editor SÍ) ═══════════
 //
@@ -63,11 +84,17 @@
 //   contadores en pantalla, le das click TRES veces al de arriba.
 //   ¿Cuánto marca el de arriba y cuánto el de abajo? ¿Comparten
 //   el número o no? Apúntala:
-//           R.P.:
+//           R.P.:  No debería compartirse. Ambos deberían tener dos casas distintas no? Sí, exacto, así cómo el scope en Typescript.
 //   Prueba. Si tu predicción falló, mira el archivo otra vez y
 //   explica en UNA línea DÓNDE vive cada número (¿en el componente
 //   o en la llamada?):
-//           R.P.:
+//           R.P.: Vive en la llamada. Porque si fuera en el componente, el número final del click se compartiría.
+//          ── REIMU (corrección, Oct 11): La única pieza que sigue cruzada.
+//          Tu propia razón te delata: si viviera EN LA LLAMADA se
+//          compartiría — y no se compartió. La llamada es App para los DOS
+//          contadores; lo que no comparten es el COMPONENTE. Cada
+//          <Contador /> estampa su propio useState desde cero. Tu W1
+//          corregido y tu predicción de scope ya lo decían: alinea ésta.
 //
 // ═══════════ PARTE C — LISTA: .map vuelve (tu amigo de Python) ═══════════
 //
@@ -86,7 +113,14 @@
 // C.3 LA QUEJA: cuando corras, abre la consola del navegador
 //   (F12, pestaña Console). React va a quejarse de algo que le
 //   falta a tu .map — léela completa y ESCRÍBELA aquí:
-//           R.P.:
+//           R.P.: "Missing key property for this element in iterable."
+//          ── REIMU (corrección, Oct 11): Queja bien copiada, pero la
+//          extensión te sopló el fix y la comprensión quedó debida. La key
+//          no valida "el array correcto": es el carnet de identidad de CADA
+//          elemento — React compara keys entre pintadas para saber cuál es
+//          cuál y no reconstruir la lista entera. Y key={p.nombre} no es lo
+//          ideal: dos clientes homónimos la romperían. Dijiste "faltaría
+//          id" — exacto. Línea de entrevista: key = dato ÚNICO y ESTABLE.
 //   La queja nombra lo que falta y para qué sirve. Agrégalo.
 //   La consola del navegador es el tsc del frontend: mismo mapa.
 //
