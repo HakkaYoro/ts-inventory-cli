@@ -26,19 +26,19 @@
 //    pintar la pantalla") y tu primera frase dijo lo contrario.
 //    Reescríbela AHORA, una línea: ¿qué es renderizar y quién es
 //    el que toca la pantalla?
-//           R.P.:
+//           R.P.: Commit es lo que toca la pantalla/pinta la pantalla. Renderizar es el borrador creando el virtual DOM sin dibijar nada.
 //
 // 2. Tu useEffect de ayer quedó SIN array de dependencias y funciona
 //    igual. Una línea: tal como está, ¿cuándo corre tu efecto — y
 //    qué cambiaría con [clicks]?
-//           R.P.:
+//           R.P.: Corre el efecto cada que corre la función de Contador. Si le coloco [clicks] se va a asegurar que solo cambie cuando el valor de "clicks".
 //
 // 3. Rompehielos: en tu App, la prop "nombre" viaja de App a cada
 //    <Saludo>. Si MAÑANA toda la app (10 componentes) necesitara
 //    saber el usuario actual, ¿le pasarías la prop por los 10? ¿Qué
 //    pasa con los componentes del medio que no la usan? (no hay
 //    respuesta incorrecta — es la puerta del tema de hoy).
-//           R.P.:
+//           R.P.: No sé de que hablas.
 //
 // ═══════════ PARTE A — LECTURA PRIMERO (regla de la casa) ═══════════
 //
@@ -47,13 +47,12 @@
 //     context from the same component". CORTA ahí (el resto es
 //     material de otro día). Una línea: ¿qué problema resuelve
 //     Context, y con qué piezas se arma (crear / proveer / leer)?
-//           R.P.:
-//
+//           R.P.: Es un wrapper de datos. Lo que hace es tomar los datos que se le proveen, los envuelve en un componente y los retorna. Y los tres son createContext / Provider / useContext.
 // A.2 Lee https://react.dev/learn/reusing-logic-with-custom-hooks
 //     — SOLO dos secciones: "Custom Hooks: Sharing logic between
 //     components" y "Passing reactive values between Hooks". Una
 //     línea: ¿qué es un custom hook y qué regla de NOMBRE trae?
-//           R.P.:
+//           R.P.: Un hook es algo que se activa si un componente necesita hacer algo, aes para no repetir código. Literalmente, si algo se ejecuta, llama al hoom y provee su función. Y el patrón es useCamelCase. El "use" es obligatorio.
 //
 // ═══════════ PARTE B — TU HOOK + CONTEXT (editor SÍ) ═══════════
 //
