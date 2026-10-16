@@ -15,6 +15,10 @@
 // por props. Si el navegador no está abierto:
 // cd order-frontend && npm run dev.
 //
+// ═══ REIMU (cierre D33, Oct 16): 11 bloques abajo — LEER MAÑANA ANTES
+// del warm-up de D34. La de C.2 es la clave: un hook NO se activa solo,
+// se llama. Tu B.2 fue la predicción más limpia de la semana. ═══
+
 // ═══════════ WARM-UP (sin editor — responde en este archivo) ═══════════
 //
 // 0. COBRO DE AYER: abre el banner REIMU del 13-oct arriba de este
@@ -27,11 +31,18 @@
 //    Reescríbela AHORA, una línea: ¿qué es renderizar y quién es
 //    el que toca la pantalla?
 //           R.P.: Commit es lo que toca la pantalla/pinta la pantalla. Renderizar es el borrador creando el virtual DOM sin dibijar nada.
+//          ── REIMU (corrección, Oct 16): Saldado. Commit pinta, render calcula el
+//          borrador (virtual DOM) sin tocar pantalla. Exacto — deuda de ayer cobrada
+//          a la primera. Así se cierra un hueco.
 //
 // 2. Tu useEffect de ayer quedó SIN array de dependencias y funciona
 //    igual. Una línea: tal como está, ¿cuándo corre tu efecto — y
 //    qué cambiaría con [clicks]?
 //           R.P.: Corre el efecto cada que corre la función de Contador. Si le coloco [clicks] se va a asegurar que solo cambie cuando el valor de "clicks".
+//          ── REIMU (corrección, Oct 16): Bien: sin array corre en cada render; con
+//          [clicks] solo cuando clicks cambia. Y lo aplicaste HOY solo en
+//          useDocumentTitle([title]) sin que nadie te lo pidiera — eso es
+//          transferencia, vale más que la respuesta correcta.
 //
 // 3. Rompehielos: en tu App, la prop "nombre" viaja de App a cada
 //    <Saludo>. Si MAÑANA toda la app (10 componentes) necesitara
@@ -39,6 +50,10 @@
 //    pasa con los componentes del medio que no la usan? (no hay
 //    respuesta incorrecta — es la puerta del tema de hoy).
 //           R.P.: No sé de que hablas.
+//          ── REIMU (corrección, Oct 16): Era a propósito — la puerta del tema de
+//          hoy. La respuesta ya la tienes: con 10 componentes, los del medio cargan
+//          y reenvían una prop que no usan. Tu frase del chat ('en chico no se ve,
+//          en grande sí') ES la respuesta de C.1 — guárdala.
 //
 // ═══════════ PARTE A — LECTURA PRIMERO (regla de la casa) ═══════════
 //
@@ -48,11 +63,22 @@
 //     material de otro día). Una línea: ¿qué problema resuelve
 //     Context, y con qué piezas se arma (crear / proveer / leer)?
 //           R.P.: Es un wrapper de datos. Lo que hace es tomar los datos que se le proveen, los envuelve en un componente y los retorna. Y los tres son createContext / Provider / useContext.
+//          ── REIMU (corrección, Oct 16): Los tres nombres exactos — bien. Pero
+//          'wrapper de datos que retorna' se queda corto: Context no envuelve para
+//          devolver, deja el dato disponible ARRIBA y cualquiera ABAJO lo toma sin
+//          pasar por los del medio. El problema (props atravesando 10 componentes)
+//          nunca salió en tu línea — vivía en W.3.
 // A.2 Lee https://react.dev/learn/reusing-logic-with-custom-hooks
 //     — SOLO dos secciones: "Custom Hooks: Sharing logic between
 //     components" y "Passing reactive values between Hooks". Una
 //     línea: ¿qué es un custom hook y qué regla de NOMBRE trae?
 //           R.P.: Un hook es algo que se activa si un componente necesita hacer algo, aes para no repetir código. Literalmente, si algo se ejecuta, llama al hoom y provee su función. Y el patrón es useCamelCase. El "use" es obligatorio.
+//          ── REIMU (corrección, Oct 16): Regla del nombre: perfecta (use +
+//          CamelCase, use obligatorio). La definición no: un hook no 'se activa si
+//          el componente necesita algo' — es una función que TÚ LLAMAS dentro del
+//          componente para reutilizar lógica. Se llama, como llamaste
+//          useDocumentTitle() en Contador. ('aes', 'hoom' — typos de niebla, no
+//          cuentan.)
 //
 // ═══════════ PARTE B — TU HOOK + CONTEXT (editor SÍ) ═══════════
 //
@@ -81,10 +107,15 @@
 // B.2 PREDICCIÓN (antes de probar, en este archivo): si comentas
 //   el Provider entero, ¿qué lee el Saludo de adentro — error,
 //   undefined, u otra cosa? Una línea.
-//           R.P.:
+//           R.P.: Sale "Invitado"
+//          ── REIMU (corrección, Oct 16): EXACTA — y la predicción más valiosa del
+//          día: elegiste el default tú, predijiste que sin Provider cae al default,
+//          y el navegador lo confirmó. Decidir → predecir → verificar: ese circuito
+//          es literalmente el oficio.
 //   Prueba. Si tu predicción falló, tu propio default de B.1 te
 //   explica por qué. Una línea el fallo (si hubo).
-//           R.P.:
+//           R.P.: No hubo fallo.
+//          ── REIMU (corrección, Oct 16): Sin fallo y registrado. Bien.
 //
 // ═══════════ PARTE C — CIERRE CONCEPTUAL ═══════════
 //
@@ -92,22 +123,42 @@
 //   igual llegó al Saludo de adentro. Dos líneas: ¿por qué "el del
 //   medio no se entera" es exactamente la ventaja de Context sobre
 //   las props?
-//           R.P.:
+//           R.P.: La ventaja en sí de las props es que en proyectos grandes, facilita la inserción de datos o de funciones especiales o similar. Cosas que sigan siempre un patrón.
+//          ── REIMU (corrección, Oct 16): Lo que dijiste en el chat valía más que
+//          esto: 'en chico no se ve la ventaja, en grande sí' + los del medio
+//          reenviando sin usar. ESO es C.1. El porqué del medio: el dato viaja por
+//          el Provider POR ENCIMA de él, no a través de sus props — por eso no se
+//          entera y por eso eso es la ventaja.
 //
 // C.2 Vocabulario del día, una línea cada uno con tus palabras:
 //   ¿qué es el Provider? ¿qué es un custom hook?
-//           R.P.:
+//           R.P.: Un Custom Hook es una función que solo se activa al accionar ciertas condiciones de forma automática (Misma idea que los hooks de Pacman en Arch). El provider cómo el nombre lo dice, provee datos a un context.
+//          ── REIMU (corrección, Oct 16): Provider: breve y exacto. Custom hook:
+//          NO 'se activa al accionar condiciones' — es una función que encapsula
+//          lógica reutilizable y SE LLAMA desde el componente. El anchor de Pacman
+//          es creativo pero te traiciona en una entrevista: los hooks de pacman son
+//          TRIGGERS (evento dispara acción); los de React son FUNCIONES que tú
+//          invocas. La diferencia es quién inicia: ahí nadie, aquí tú.
 //
 // C.3 La trampa de B.1, defendida: ¿por qué ESE default y no otro?
 //   ¿Qué pasa si un componente lee el contexto sin Provider y tu
 //   default era un valor "inocente"? Dos líneas defendiendo tu
 //   decisión (el bug silencioso es el punto).
-//           R.P.:
+//           R.P.: Cual bug silencioso? La idea de poner un default (en este caso Invitado) porque son saludos, en el caso de no saber quien es quien te habla, lo mejor es llamar a la persona invitado, en vez de anónimo o inocente.
+//          ── REIMU (corrección, Oct 16): El bug silencioso: con default undefined,
+//          un Saludo sin Provider mostraría 'Hola, ' — raro y VISIBLE. Con
+//          'Invitado' renderiza bonito y NADIE nota que falta el Provider — el bug
+//          se disfraza de feature. Por eso el default es decisión de ingeniería,
+//          no de cortesía. Tu defensa UX (Invitado vs anónimo) es válida — pero era
+//          la mitad de la pregunta.
 //
 // C.4 Entrevista: "¿Cuándo escribes un custom hook en vez de copiar
 //   el efecto en cada componente?" Tu useDocumentTitle de HOY es la
 //   respuesta. Dila en una línea.
-//           R.P.:
+//           R.P.: Solo se usa un hook en vez de un effect si se va a repetir la misma acción varias veces a través de varios archivos.
+//          ── REIMU (corrección, Oct 16): Correcto, y es tu línea de entrevista:
+//          'cuando la misma lógica se repite en varios componentes, extraigo un
+//          hook — mi useDocumentTitle es el ejemplo'. Entendida así, no memorizada.
 //
 // ═══════════ CIERRE ═══════════
 // - tsc: npx tsc --noEmit -p tsconfig.app.json → 0 errores.
