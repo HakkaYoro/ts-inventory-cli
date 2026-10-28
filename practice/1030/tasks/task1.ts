@@ -10,7 +10,7 @@
 // Contexto: tu /pedidos YA le pide datos a tu API y los pinta con
 // tres estados. Hoy le sumas una capa nueva a un componente que ya
 // es tuyo. El día es sobre CUÁNDO React recalcula y cómo decirle
-// "no lo recalculés". Pero primero, el cobro.
+// "no lo recalcules". Pero primero, el cobro.
 //
 // ═══════════ WARM-UP (sin editor — responde en este archivo) ═══════════
 //
