@@ -1,5 +1,6 @@
 // ═══════════════════════════════════════════════════════════════
-// TASK D37 — VIERNES 30-OCT · Fase 3: React día 8: useMemo +
+// TASK D37 — LUNES 2-NOV (corrió sáb 31 → lun 2 por deuda de sueño) ·
+// Fase 3: React día 8: useMemo +
 // useCallback (+ estado global, de paseo)
 // ESTADO: CALIBRADA (mié 28-oct, al cierre de D36 — REGLA 0b nueva:
 // la task siguiente nace EN el cierre). Deck: 179 cartas (2 de d36
@@ -64,10 +65,12 @@
 //
 // ═══════════ PARTE B — EN TU PROYECTO ═══════════
 //
-// B.0 LA PRUEBA DE QUE HAY PROBLEMA: en tu Clicks.tsx (el Contador
-//   de siempre), agrega un console.log adentro del cuerpo del
-//   componente. Abre /clicks, mira la consola, y aprieta el botón
-//   3 veces. ¿Cuántos logs por clic? PREDICE antes de mirar:
+// B.0 LA PRUEBA DE QUE HAY PROBLEMA: en tu Contador.tsx (el
+//   componente con useState que vive DENTRO de la página /clicks —
+//   NO en Clicks.tsx, que es solo la página que lo envuelve y no
+//   tiene estado propio), agrega un console.log adentro del cuerpo
+//   del componente. Abre /clicks, mira la consola, y aprieta el
+//   botón 3 veces. ¿Cuántos logs por clic? PREDICE antes de mirar:
 //           R.P. (predicción):
 //           R.P. (resultado):
 //
