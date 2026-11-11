@@ -1,11 +1,18 @@
 // ═══════════════════════════════════════════════════════════════
-// TASK D38 — MARTES 3-NOV · Fase 3: React día 9: Testing con RTL
-// (React Testing Library + Vitest) → CIERRA FASE 3
+// TASK D38 — MIÉ 11-NOV (parte 1) + VIE 13-NOV (parte 2) · Fase 3:
+// React día 9: Testing con RTL (React Testing Library + Vitest)
+// → CIERRA FASE 3
 // ESTADO: CALIBRADA (lun 2-nov, cierre D37 — regla 0b). Deck: 184
-// (3 de d37 + 3 de d35 NUEVAS de anoche — verlas HOY temprano; ojo,
-// la de StrictMode la vas a VIVIR hoy mismo en B.1). Repos:
+// (6 nuevas esperando desde el 2-nov — van con la tanda del VIERNES;
+// la de StrictMode la vas a VIVIR en B.1). Repos:
 // ts-inventory 59f521f + cierre de anoche, order-frontend de10a80,
 // order-api 5e6608b. tsc 0 en todo.
+//
+// 🔻 MODO SUAVE (mié 11-nov, orden de Marisa tras semana dura):
+// HOY SOLO → W.0/W.1 recortados + B.0 + B.1. Nada más. Con eso
+// alcanza, commit, y el día CUENTA. Si la batería sorprende y
+// quieres seguir, se puede — pero nadie te lo pide hoy.
+// VIERNES 13 → Parte A + B.2 + B.3 + Parte C (cierra Fase 3).
 //
 // Contexto: ya sabes VITEST (Fase 2: los mocks del Repository) y ya
 // sabes REACT (8 componentes tuyos andando). Hoy se cruzan las dos
@@ -18,10 +25,13 @@
 //    grandes: StrictMode (2 corridas en dev) y la trampa de B.2
 //    (useCallback estabiliza referencias, no compacta código).
 //    ¿Cuántas de las 9 corrigiste en tu cabeza al leerlas? Una línea.
+//    (HOY modo suave: lee SOLO las 2 grandes y responde esta.
+//    Las otras 7 esperan al viernes.)
 //           R.P.:
 //
-// 1. Anki primero (6 nuevas de anoche: 3 de d37 + 3 de d35). La de
-//    StrictMode déjala fresca — B.1 te la va a cobrar en persona.
+// 1. Anki HOY OPCIONAL (modo suave): si la cabeza da, 10 minutos
+//    de PURA REPASO, nada de nuevas. Si no da, no pasa nada —
+//    la tanda completa vuelve el viernes.
 //
 // 2. Sin instalar nada: tu Contador YA es testable tal como está.
 //    Un test aprieta el botón "Dame click!" UNA vez. PREDICE: ¿qué
@@ -86,10 +96,12 @@
 //   Para apretar botones: userEvent (A.1 te mostró el import).
 //
 // B.3 TRAMPA de decisión: getByText("Clicks dados: 2") es exacto.
-//   Pero getByText(/Clicks/) con regex... tu Contador pintó DOS
-//   <i> con la palabra Clicks adentro ("Clicks dados" y ¿la otra?).
+//   Ahora escribe getByText(/clicks/i) — regex, con la i final.
+//   PREDICE antes de correr: ¿cuántos nodos de TU Contador matchean
+//   ese regex? (Cuenta los TEXTOS de tu Contador.tsx — son cuatro.)
 //   ¿Qué pasa si un getBy matchea 2 elementos? ¿Y cuándo te CONVIENE
 //   el regex sobre el string exacto? Defiende en dos líneas.
+//           R.P. (predicción):
 //           R.P.:
 //
 // ═══════════ PARTE C — CIERRE CONCEPTUAL ═══════════
@@ -116,10 +128,12 @@
 //
 // ═══════════ CIERRE ═══════════
 // - tsc: npx tsc --noEmit -p tsconfig.app.json → 0 errores.
-// - vitest: npm test → 5/5 verdes (2 del muro + 3 de B.2).
+// - vitest HOY: npm test → los del muro verdes. El 5/5 completo
+//   (con los 3 de B.2) es la meta del VIERNES. Commit de hoy =
+//   config + tests del muro. Suficiente.
 // - Commits: order-frontend (tests del Contador + config) + este repo.
-// - Anki: tanda (6 nuevas de ayer + las que nazcan hoy: la pareja
-//   getBy/queryBy/findBy es carta casi segura).
+// - Anki: HOY opcional (arriba). La tanda completa (las 6 nuevas
+//   esperando desde el 2-nov + las que nazcan) va con el viernes.
 // - Batsu. Dormir a tiempo. 🎉 FASE 3 COMPLETA.
 //
 // NOTA de Reimu: el muro de B.1 me pasó a MÍ anoche, verificando
