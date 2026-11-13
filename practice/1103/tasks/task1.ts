@@ -27,7 +27,7 @@
 //    ¿Cuántas de las 9 corrigiste en tu cabeza al leerlas? Una línea.
 //    (HOY modo suave: lee SOLO las 2 grandes y responde esta.
 //    Las otras 7 esperan al viernes.)
-//           R.P.:
+//           R.P.: Leí todo, pero sigo sin que me quepa en la cabeza el cómo funciona useCallback, osea. Para qué lo usaría? El de useMemo si sé que sirve, y bastante para ciertos casos, pero useCallback? Ni idea.
 //
 // 1. Anki HOY OPCIONAL (modo suave): si la cabeza da, 10 minutos
 //    de PURA REPASO, nada de nuevas. Si no da, no pasa nada —
@@ -66,7 +66,7 @@
 //   Las 6: vitest, jsdom, @testing-library/react,
 //   @testing-library/dom, @testing-library/user-event,
 //   @testing-library/jest-dom.
-//           R.P. (predicción):
+//           R.P. (predicción): Solo vitest, y jest-dom. Jest-dom porque Santiago me ha dico que eso es del diablo, que no lo toque, vitest ftw porque jest causa memory leaks a veces. Pero en sí, todos en común son tests.
 //   Luego: npm i -D <las 6>. En package.json agrega el script
 //   "test": "vitest run". Tu vite.config.ts YA existe — NO lo
 //   reemplaces: agrégale la clave test (environment jsdom +
