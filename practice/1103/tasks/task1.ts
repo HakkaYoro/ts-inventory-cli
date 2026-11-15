@@ -43,7 +43,10 @@
 //
 // A.1 Lee el README de RTL en GitHub:
 //     https://github.com/testing-library/react-testing-library
-//     — el primer ejemplo de código (el de render + screen). Tres líneas:
+//     — sección "Basic Example". OJO: son DOS bloques de código — el
+//     primero es el COMPONENTE; el que te importa es el SEGUNDO (el
+//     test, arranca con // __tests__/hidden-message.js — render y
+//     screen viven ahí). Tres líneas:
 //     (a) ¿qué recibe render() y qué hace con eso?
 //           R.P.:
 //     (b) ¿qué es screen y de dónde saca los elementos?
