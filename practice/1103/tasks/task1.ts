@@ -37,12 +37,13 @@
 //    Un test aprieta el botón "Dame click!" UNA vez. PREDICE: ¿qué
 //    texto exacto aparece en pantalla después, y con qué número?
 //    (Adivina de memoria, sin abrir el archivo.)
-//           R.P.:
+//           R.P.:  Sale "Clicks dados: N", donde N es la cantidad de clicks dados al botón.
 //
 // ═══════════ PARTE A — LECTURA PRIMERO (regla de la casa) ═══════════
 //
-// A.1 Lee https://testing-library.com/docs/react-testing-library/intro/
-//     — hasta el final del primer ejemplo de código. Tres líneas:
+// A.1 Lee el README de RTL en GitHub:
+//     https://github.com/testing-library/react-testing-library
+//     — el primer ejemplo de código (el de render + screen). Tres líneas:
 //     (a) ¿qué recibe render() y qué hace con eso?
 //           R.P.:
 //     (b) ¿qué es screen y de dónde saca los elementos?
@@ -144,10 +145,13 @@
 // adentro. Y ojo con C.4: esa respuesta es material de entrevista
 // real — "¿qué harías distinto?" cae en TODAS.
 //
-// FOOTER de links (por si mueren): testing-library.com/docs/
-// react-testing-library/intro y /docs/queries/about — verificadas
-// POR CONTENIDO el 2-nov (anclas: "React Testing Library" ×5 en
-// intro; getByText ×14 en queries). La web es JS-render en partes:
-// si CTRL+F no encuentra algo, la sección está más abajo o llegó
-// tarde al DOM — recarga antes de declarar muerto un link.
+// FOOTER de links (por si mueren): A.1 = README de GitHub (github.com/
+// testing-library/react-testing-library — re-anclado el 15-nov: la
+// intro de testing-library.com perdió su ejemplo de código en una
+// reestructuración; el README vive en HTML crudo). A.2 = testing-
+// library.com/docs/queries/about (VERIFICADA viva el 15-nov: las tres
+// definiciones getBy/queryBy/findBy + la tabla-resumen están; el
+// heading "Variantes" ya no existe — no te asustes si CTRL+F no lo
+// encuentra). La web es JS-render en partes: recarga antes de
+// declarar muerto un link.
 //
