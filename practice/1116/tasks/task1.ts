@@ -54,7 +54,7 @@
 //     (a) ¿Qué hace diferente a un Value Object de una clase con
 //     setters?
 //           R.P.:
-//     (b) ¿Por qué dos VOs con el mismo valor pueden ser
+//     (b) ¿Por qué dos Value Objects con el mismo valor pueden ser
 //     intercambiables sin miedo?
 //           R.P.:
 //
@@ -99,24 +99,22 @@
 //     propio y se define por su valor?
 //           R.P.:
 //
-// B.3 Mini-test: en ts-inventory-cli/practice/1116/ escribe UN test
-//     de Money (sum + equals, verde con vitest — ya sabes vitest de
-//     sobra). REGLA DEL ÁRBOL: escribe el test en el repo practice/
-//     y deja el money.ts en order-api — te ayuda a NO acoplarte al
-//     dominio de order-api. Import: en este setup con
-//     allowImportingTsExtensions, la ruta lleva extensión .ts.
-//     OJO con la import: la ruta al repo hermano con extensión .ts
-//     Comando:
-//       cd order-frontend && npx vitest run \
-//         --exclude "**/.stversions/**" \
-//         ../../ts-inventory-cli/practice/1116/<tu-spec>.ts
-//     MINA VIGENTE (re-verificada HOY 15-nov con vitest 5 real: sin
-//     exclude ni filtro de ruta, la copia de .stversions/ entra al
-//     scan y el run revienta con "No test suite found"; el --exclude
-//     la deja fuera y el run queda limpio). PREDICE antes de correr:
-//     si el import del test apuntara a un Money que NO existe, ¿quién
-//     caza el error y dónde — vitest al correr, o algo antes de que
-//     corra?
+// B.3 Mini-test del Money: en order-frontend/src/ escribe
+//     money.test.ts (junto a Contador.test.tsx — vitest SOLO escanea
+//     dentro de su root; verificado en vivo por Reimu: un test en
+//     practice/1116 queda FUERA del scan y da "No test files found").
+//     El import CRUZA al repo hermano:
+//       import { Money } from
+//         "../../order-api/src/orders/domain/value-objects/money.ts";
+//     — extensión .ts incluida (allowImportingTsExtensions) y ruta
+//     relativa ../../ (order-api es hermano de order-frontend).
+//     Contenido: sum + equals verdes + UNA línea extra que ya viste
+//     en B.1: el rechazo del negativo (create(-5) → throw).
+//     REGLA DEL ÁRBOL: el test vive en order-frontend (ahí corre tu
+//     runner), pero el money.ts queda en order-api — no acoples el
+//     dominio al frontend. PREDICE antes de correr: si el import
+//     apuntara a un Money que NO existe, ¿quién caza el error y
+//     dónde — vitest al correr, o algo antes de que corra?
 //           R.P. (predicción):
 //           R.P. (resultado):
 //
@@ -145,9 +143,10 @@
 // ═══════════ CIERRE ═══════════
 // - tsc 0: order-api → npx tsc --noEmit (0 errores, re-verificado
 //   hoy 15-nov).
-// - Test de Money VERDE (comando de B.3, con --exclude .stversions).
-// - Commits: order-api (si tocaste — money.ts es nuevo) +
-//   ts-inventory-cli (esta task + spec de B.3).
+// - Test de Money VERDE: npx vitest run en order-frontend
+//   (Contador 5/5 + tu money.test.ts de B.3).
+// - Commits: order-api (money.ts nuevo) + order-frontend
+//   (money.test.ts) + ts-inventory-cli (esta task).
 // - Anki tanda: deck 189 (las nuevas del d38 esperando + las que
 //   nazcan hoy).
 // - Batsu. Dormir a tiempo. 🎉 FASE 4 DÍA 1.
