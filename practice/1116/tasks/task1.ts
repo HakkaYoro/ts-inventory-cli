@@ -172,8 +172,10 @@
 //          cobro fuerte: TU TEST TENÍA DOS EXPECTS VACÍOS. En Equals escribiste
 //          .toBeFalsy y .toBeTruthy SIN paréntesis — eso no llama al matcher: crea la
 //          REFERENCIA de la función y la descarta. expect(uno.equals(dos)).toBeFalsy
-//          equivale a expect(false) sin aserción: PASA SIEMPRE. Tus tests "Equals" y
-//          "Num Positivo" de hoy no afirman NADA — el verde mintió. Fix en D40 warm-up:
+//          equivale a expect(false) sin aserción: PASA SIEMPRE. Solo el test
+//          "Equals" quedó vacío (sus DOS expects). "Num Positivo" SÍ afirma:
+//          flecha + toThrow() con paréntesis — ES EL MODELO, está 10 líneas
+//          arriba en TU archivo. Fix en D40 warm-up:
 //          expect(uno.equals(dos)).toBe(false) — matcher pelado + PARENTESIS, o mejor
 //          .toBeFalsy(). Y agrega el caso positivo con DOS instancias: new Money(3)
 //          equals new Money(3) → true (igualdad por VALOR entre objetos distintos).
