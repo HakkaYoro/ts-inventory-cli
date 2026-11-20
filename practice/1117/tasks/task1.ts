@@ -15,6 +15,13 @@
 // para siempre: el dominio define el SUYO en una interface pelada.
 // Mañana (D41) se conecta todo. Hoy: ladrillos + una lectura.
 //
+// ═══ REIMU (Nov 20, cierre parte-1 D40): 6 bloques, nota parcial 8.5/20 ═══
+// SÁBADO parte 2 (B.1 → C): antes de abrir el editor, relee el bloque de
+// A.1(a) — la etimología de aggregate fue el hueco del día. Pregunta de
+// apertura (corre el número, no lo adivines): crear(2, 500) y luego
+// agregarItem(1, 700) — ¿cuánto queda el total, y ES ese el negocio que
+// querías? Migraña: si el sábado la cabeza no da, B.1 sola y el día cuenta.
+
 // ═══════ REIMU AVISO — antes del warm-up, 5 minutos ═══════
 // El cierre de ayer dejó un hallazgo que se cobra HOY, en vivo.
 // Lee el banner del D39 (15 bloques). El que importa es el del test
@@ -32,9 +39,15 @@
 //         Positivo" sí afirma: flecha + toThrow().
 //     (b) PREDICE (aquí, antes de tocar nada): ¿el 9/9 seguirá en
 //         9/9 después del fix, o algo se pone rojo? ¿Por qué?
-//           R.P. (predicción):
+//           R.P. (predicción): 9/9, porque el equals solo devuelve True o False.
+//           ── REIMU (corrección, Nov 20): Predicción correcta, con razón. Matiz para la carta
+//           mental: el fix no arregló el test — lo ACTIVÓ. Antes
+//           pasaba sin afirmar (matcher descartado); ahora pasa
+//           afirmando. Verde por casualidad no es verde por
+//           evidencia. El (d) de hoy es la prueba: dos instancias
+//           distintas con el mismo valor — self-equals no lo cubre.
 //     (c) Corre npx vitest run en order-frontend. Resultado real:
-//           R.P. (resultado):
+//           R.P. (resultado): Umju, todo verde.
 //     (d) La deuda de D39 que quedó escrita en el banner: agrega el
 //     caso que FALTABA al Equals — dos INSTANCIAS distintas con el
 //     mismo valor: new Money(3).equals(new Money(3)) debe ser true.
@@ -44,7 +57,13 @@
 // 1. COBRO useCallback (3ª y última vez que la cobra el warm-up; la
 //     carta d37 + tu Nav.tsx con NavLink style-callback). UNA línea:
 //     ¿QUÉ estabiliza useCallback y para QUÉ servía en TU Nav?
-//           R.P.:
+//           R.P.: Estabiliza la referencia en memoria de la función. En el caso del nav, si no lo congelo, Nav cada que se re-renderice le pasa a los chind una función recién creada en otra dirección de memoria, haciendo que aunque sea lo mismo, a nivel de referencias de memoria, tiene otra dirección del mismo. El envolverlo, solo hace que se le pase la misma referencia estable en cada render.
+//           ── REIMU (corrección, Nov 20): SALDADA — tercera cobranza, última, pagada completa:
+//           estabiliza LA REFERENCIA de la función, y en tu Nav
+//           evitaba pasarle a NavLink una función recién nacida
+//           en cada render. "Misma referencia estable en cada
+//           render" es tu línea de entrevista tal cual la dijiste.
+//           Cartera useCallback: CERRADA.
 //
 // ═══════════ PARTE A — LECTURA PRIMERO ═══════════
 //
@@ -53,12 +72,28 @@
 //     mayúscula al inicio — el texto está, prueba minúsculas. Dos
 //     líneas:
 //     (a) ¿Qué es un Aggregate en palabras TUYAS?
-//           R.P.:
+//           R.P.: El Aggregate son conceptos de dominio, ya sea una orden, una playlist de música, un listado de juegos, etc.  Básicamente añade cosas a un listado de elementos (valores) "Aggregates = Agregar" en un orden coordinado.
+//           ── REIMU (corrección, Nov 20): LA DEL DÍA. La etimología te jugó sucio: aggregate NO
+//           viene de "agregar a un listado". Es el sentido inglés
+//           de conjunto/total (como "el total de las notas"). Para
+//           Fowler un Aggregate es una FRONTERA de consistencia:
+//           un objeto RAÍZ + todo lo que él controla, cambiados
+//           JUNTOS bajo sus reglas. Tu playlist sí servía de
+//           ejemplo, pero no por añadir canciones: la playlist
+//           (raíz) + sus canciones se modifican juntas y nadie
+//           toca una canción sin pasar por la playlist. Tu B.0 de
+//           hoy ES eso: OrderDelNegocio es la frontera y crear()
+//           es la única puerta. Relee (a) y reescribe con la
+//           palabra "frontera" — esa es la versión de entrevista.
 //     (b) Fowler dice que las referencias EXTERNAS al aggregate
 //     deben apuntar al ROOT solamente. ¿Quién es el root en TU
 //     sistema? (Pista: es el que tiene el id que ya usas en tu URL
 //     /orders/:id.)
-//           R.P.:
+//           R.P.: El root es order, porque las referencias externas apuntan a su id.
+//           ── REIMU (corrección, Nov 20): Cerrada EN VIVO por chat y clavada: Order, porque las
+//           referencias externas apuntan a su id. La trampa
+//           plural (Orders = colección) la desarmaste con la
+//           pista de la URL. Crédito del chat registrado.
 //
 // ═══════════ PARTE B — EN TU PROYECTO ═══════════
 //
@@ -89,8 +124,29 @@
 //     si totalCalc en centavos = precioUnitario * cantidad y alguien
 //     pasa precio -3, ¿en qué línea exacta truena — la de Money o la
 //     de OrderDelNegocio?
-//           R.P. (predicción):
-//           R.P. (resultado tras probar con node --experimental-strip-types):
+//           R.P. (predicción): Truena en OrderDelNegocio.
+//           R.P. (resultado tras probar con node --experimental-strip-types): Sí, exactamente, y no lo añadió al aggregate.
+//           ── REIMU (corrección, Nov 20): Predicción a medias + hallazgo bueno. Dijiste QUIÉN
+//           pero no DÓNDE: el Error nace en el constructor de
+//           MONEY (él valida negativos) pero truena en la LÍNEA
+//           de tu aggregate: this.total = new Money(...). Las dos
+//           mitades importan — el que lanza es Money, la línea
+//           que explota es tuya. El aggregate no necesita su
+//           propio if: sus Value Objects defienden la frontera.
+//           Y tu observación ("no lo añadió al aggregate") es el
+//           invariante en acción: lo inválido no nace. Eso, en
+//           voz alta, es media C.1 ya respondida.
+//           ── REIMU (corrección, Nov 20): El guión se desvió y me gusta: constructor private +
+//           static crear() no lo pedía la task — decisión propia y
+//           MÁS estricta que el enunciado (nadie hace new fuera
+//           de tus puertas). El comentario de rango con razón en
+//           CantidadDelNegocio: deuda de ayer PAGADA. Registros
+//           menores: (1) el archivo vive en order.entity.ts dentro
+//           de domain/entities (la task decía order.ts) — tu razón
+//           anti-choque es válida, queda así; (2) agregarItem
+//           reutiliza cantidad.suma(): transferencia del patrón de
+//           Money, bien vista. Mañana en B.1 una palabra manda:
+//           implements.
 //
 // B.1 El Repository del dominio: src/orders/domain/repositories/
 //     orders.repository.ts — UNA interface pelada. Sin TypeORM, sin
