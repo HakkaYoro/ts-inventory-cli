@@ -1,6 +1,6 @@
 // ═══════════════════════════════════════════════════════════════
 // TASK D41 — MAR 24-NOV · Fase 4 día 3 — EL SERVICE CAMBIA DE IDIOMA
-// ESTADO: CALIBRADA (lun 23-nov, cierre D40). Deck: 199 (64 nuevas
+// ESTADO: EN CURSO — parte 1 (W+A) cerrada mar 24-nov; Parte B corre JUE 26 (recupera el mié libre). Deck: 199 (64 nuevas
 // esperando — tanda esta semana sí o sí). Repos al cierre de hoy:
 // order-api e82828a (interface + OrdersORM + columna precio),
 // order-frontend e7f0786 (12/12), ts-inventory 7e63861 (push OK).
@@ -13,6 +13,17 @@
 // salario. Registro CONCRETO (orden tuya): todo lo de hoy nombra
 // archivos tuyos, líneas tuyas, resultados que puedes correr.
 //
+// ═══════ REIMU (corrección, Nov 24 — cierre parte 1) ═══════
+// LEER ANTES DE LA PARTE B (jueves 26). 7 bloques: W.0 ×3 (el de
+// (a) es el que importa: "seguridad" NO es la razón del private),
+// W.1 ×2 (tu boot cazó una capa que mi calibración no vio — el mejor
+// hallazgo del día), A.1 ×2. La mina cambió de forma: el server NO
+// bootea completo (el sync truna en la SQL, antes del dominio). Tu
+// B.2 del jueves ahora decide TAMBIÉN cómo desbloquear el boot
+// (¿columna nullable? ¿default? ¿qué pasa con las 212 viejas?) —
+// decisión + comentario, como siempre. Hoy: almuerzo tranquilo y
+// derma a las 16:00. El día ya contó.
+//
 // ═══════ REIMU AVISO — antes del warm-up ═══════
 // Banner v2 del D40 (8 bloques) — el de la confesión LLM es el de
 // HOY. No pases al warm-up sin leerlo.
@@ -23,14 +34,37 @@
 //     order-api/src/orders/domain/entities/order.entity.ts y
 //     explica EN VOZ ALTA (o escrito aquí, línea por línea):
 //     (a) por qué el constructor es private y crear() es static;
+//          R: El constructor es privado porque son popiedades que no deben ser vistas fuera de la clase, que deben ser inaccesibles a menos que se use un method explicito en la clase, es más que todos razones de seguridad. Mientras que crear() es static porque es más que todo porque pertenece más a los planos de la clase que a cualquier objeto específico que se cree dentro de la clase. Además que se usa más que todo para métodos donde se usen cálculos matemáticos o métodos fábricadores de objetos.
+//          ── REIMU (corrección, Nov 24): (a) a medias. El private NO es
+//          "seguridad" ni esconder propiedades: es el INVARIANTE. Si el
+//          constructor es privado, la única puerta es crear(), y crear()
+//          valida — nada inválido nace. Tu Money hace exactamente eso en
+//          su constructor. "Planos de la clase" para static: bien, crear()
+//          existe sin instancia previa. Línea de entrevista: "el constructor
+//          privado garantiza que todo Order nace válido".
 //     (b) línea 13 — this.total = new Money(precio * cantidad.value):
 //         si precio llega -300, ¿QUIÉN lanza y DÓNDE explota?
+//          R: Lanza primero cantidad si es invalida al hacer crear(), luego new Money lanza el errror dentro de Money.validate del constructor.
+//          ── REIMU (corrección, Nov 24): (b) CORRECTO, verificado contra tu
+//          archivo: crear() arma CantidadDelNegocio PRIMERO y Money después
+//          (mira el orden dentro de crear() y del constructor) — cantidad
+//          truena antes, y si pasa, Money en el constructor. El orden que
+//          dijiste es el orden real de las líneas. Y "tuve que indagar dentro
+//          del código" es EXACTAMENTE el cobro: explicar lo que el LLM
+//          escribió con tus estructuras dictadas.
 //     (c) agregarItem: ¿qué reutiliza de CantidadDelNegocio y qué
 //         devuelve?
+//          R:  Reutiliza suma y su validador interno, y devuelve una nueva instancia de order del negocio, nunca modifica la original.
 //     Si las explicas fluido, la ayuda fue válida y el tema cierra.
 //     Si algo no puedes explicarlo, márcalo aquí — eso es lo que se
 //     estudia hoy, sin castigo.
-//           R.P. (lo que explicó / lo que no pudo):
+//           R.P. (lo que explicó / lo que no pudo): AHí te expliqué más arriba, A, súper fácil, B y C si tuve que indagar dentro del código un poco para explicarte.
+//          ── REIMU (corrección, Nov 24): termómetro SALDADO — A fluido, B y C
+//          con indagación = la ayuda fue válida y la deuda LLM del D40 queda
+//          pagada. (c) correcta también: suma() revalida porque construye una
+//          CantidadDelNegocio NUEVA, y devuelves instancia nueva con la
+//          original intacta. Del (a) queda solo el frame (invariante, no
+//          secreto) — va como carta nueva con la tanda del jueves.
 //
 // 1. LA MINA EN VIVO (predicción ANTES — esta no la viste nunca):
 //     tu tabla "order" tiene 212 filas y NO tiene columna precio
@@ -40,12 +74,26 @@
 //         sincroniza el esquema → ¿qué valor queda en precio para
 //         las 212 filas VIEJAS? ¿Y qué va a pasar cuando algo intente
 //         OrderDelNegocio.crear() con ese valor?
-//           R.P. (predicción):
+//           R.P. (predicción): Queda NULL o NOT NULL porque se me olvidó colocar un valor default, y fallaría al mifrar las 212 filas.
+//          ── REIMU (corrección, Nov 24): predicción a medias pero con el pie
+//          derecho: dudaste "NULL o NOT NULL" y pegó la mitad real (NOT NULL,
+//          sin default, al migrar). El instinto "se me olvidó el default" era
+//          la causa exacta. La próxima: elige UNA y dila con su porqué — el
+//          hedge de dos respuestas no escala a una entrevista.
 //     (b) Bótalo de verdad. Si el GET /orders truen, lee el stack con
 //         calma: la línea que mencione Money es la frontera trabajando.
 //         No rompes nada — las filas viejas siguen ahí.
 //     (c) Resultado real + UNA línea de por qué:
-//           R.P. (resultado):
+//           R.P. (resultado): "NOT NULL constraint failed: temporary_order.precio", get orders no arrancó porque no llegó a crusar la frontera de Money. El sync intentó copiar las filas viejas a una tabla temporal sin completar precio, y sqlite rechaza la columna not null.
+//          ── REIMU (corrección, Nov 24): el hallazgo del día, y mío también:
+//          mi mina estaba calibrada una capa más adentro (NULL → Money truena);
+//          tu boot mostró que la SQL frena el sync ANTES de que el dominio
+//          vea algo — tabla temporal + columna NOT NULL + 212 filas sin
+//          precio = constraint rechazado. Lo reproduje yo mismo en una copia
+//          de tu esquema: mismo error. Tu "no llegó a cruzar la frontera de
+//          Money" lo dice completo. En entrevista esto tiene nombre: por eso
+//          synchronize no va a producción y existen las migraciones. Jueves:
+//          tu B.2 decide cómo desbloquear el boot.
 //
 // ═══════════ PARTE A — LECTURA CORTA ═══════════
 //
@@ -55,11 +103,19 @@
 //     líneas:
 //     (a) ¿Qué le dice Nest a un provider declarado como
 //         { provide: X, useClass: Y }? ¿Quién es X y quién es Y ahí?
-//           R.P.:
+//           R.P.: Cuando alguien me pida X entrégale una instancia de Y. Dpmde X es un token, puede ser un string, símbolo o una clase usada cómo llave. Mientras que Y es la implementación concreta, la que Nest instanciará.
+//          ── REIMU (corrección, Nov 24): (a) correcto y completo — X es el
+//          token (la llave), Y la implementación que Nest instancia. Con una
+//          errata ("Dpmde") que no cambia nada. Esta frase es literalmente
+//          el gesto de B.0 del jueves.
 //     (b) Tu greet.module.ts línea 7 YA hace esto con "Saludo":
 //         ¿quién decide qué clase se inyecta ahí, y qué habría que
 //         tocar para cambiarla por otra clase distinta?
-//           R.P.:
+//           R.P.: Lo decide el módulo en providers. Para cambiarla se toca únicamente useClass en esa linea, lo demás queda intacto.
+//          ── REIMU (corrección, Nov 24): (b) correcto — se toca UNA línea
+//          (useClass) y el consumidor ni se entera. Eso es lo que ganas el
+//          jueves en B.1: el service pide la interface, y quién la implementa
+//          se decide en el module. Ese día lo haces con OrdersRepository.
 //
 // ═══════════ PARTE B — EN TU PROYECTO ═══════════
 //
