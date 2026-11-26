@@ -1,6 +1,6 @@
 // ═══════════════════════════════════════════════════════════════
 // TASK D41 — MAR 24-NOV · Fase 4 día 3 — EL SERVICE CAMBIA DE IDIOMA
-// ESTADO: EN CURSO — parte 1 (W+A) cerrada mar 24-nov; Parte B corre JUE 26 (recupera el mié libre). Deck: 199 (64 nuevas
+// ESTADO: CERRADA — parte 1 (W+A) mar 24-nov: 8.5/20; parte 2 (B+C) jue 26-nov: 14/20. Deck: 199 (64 nuevas
 // esperando — tanda esta semana sí o sí). Repos al cierre de hoy:
 // order-api e82828a (interface + OrdersORM + columna precio),
 // order-frontend e7f0786 (12/12), ts-inventory 7e63861 (push OK).
@@ -12,6 +12,16 @@
 // service pasa a pedir TU interface, y el adapter cobra su primer
 // salario. Registro CONCRETO (orden tuya): todo lo de hoy nombra
 // archivos tuyos, líneas tuyas, resultados que puedes correr.
+//
+// ═══════ REIMU (corrección, Nov 26 — cierre parte 2) ═══════
+// LEER MAÑANA ANTES DEL WARM-UP del D42. 8 bloques. D41 cerrada: parte 2
+// 14/20 (parte 1 fue 8.5). Lo que importa: (1) B.2 — tus dos decisiones
+// con razón propia, lo mejor del día; (2) C.2 primera mitad, tu mejor
+// respuesta escrita; (3) C.1 quedó floja: ES la línea de entrevista de la
+// inversión y se cobra mañana. Tu confesión LLM queda aceptada: casi todo
+// B.1 salió de mi lista exacta. El cobro de mañana es explicar TU código de
+// hoy con tus palabras. Mañana task SUAVE (la pediste): el spec vuelve a
+// verde hablando el idioma de tu interface.
 //
 // ═══════ REIMU (corrección, Nov 24 — cierre parte 1) ═══════
 // LEER ANTES DE LA PARTE B (jueves 26). 7 bloques: W.0 ×3 (el de
@@ -128,8 +138,16 @@
 //     { provide: OrdersRepository, useClass: OrdersORM },
 //     ¿qué le llega a un constructor que pida OrdersRepository — la
 //     interface, o la clase OrdersORM? UNA línea.
-//           R.P. (predicción):
-//           R.P. (resultado — tsc dice):
+//           R.P. (predicción): El interface no?
+//           R.P. (resultado — tsc dice): No dice nada. Todo bien.
+//          ── REIMU (corrección, Nov 26): el resultado bien leído ("tsc no dice nada"),
+//          la predicción sin responder: "¿el interface no?" es una duda, no una línea.
+//          Respuesta para que la digas tú mañana: una interface no puede llegar a
+//          ningún constructor, nadie puede hacer new de ella. useClass instancia la
+//          CLASE (OrdersORM); la interface es solo el tipo que tsc te deja ver. Detalle
+//          tuyo válido que nadie pidió: registraste el token como string
+//          ("OrdersRepository") en vez de la interface — funciona porque tu @Inject usa
+//          EXACTAMENTE ese string. Un carácter distinto y truena en runtime, no en tsc.
 //
 // B.1 EL GESTO DEL DÍA: orders.service.ts, líneas 12-13 — el
 //     constructor pide @InjectRepository(Order) Repository<Order>.
@@ -142,8 +160,17 @@
 //     3 métodos (buscarPorId, guardar, buscarTodos); tu service usa
 //     hoy save, findOneBy, find, remove del repo TypeORM. ¿Cuáles de
 //     esos gestos existen en TU interface y cuáles NO?
-//           R.P. (predicción):
-//           R.P. (qué pasó cuando tsc vio el service nuevo):
+//           R.P. (predicción): Ninguno de los gestos usados por el service existe en la interfaz.
+//           R.P. (qué pasó cuando tsc vio el service nuevo): Reportó 6 errores.
+//          ── REIMU (corrección, Nov 26): predicción exacta ("ninguno existe") — esa
+//          era toda la respuesta del ítem. El gesto quedó hecho: el service pide tu
+//          interface, tsc 0 (lo corrí yo sobre tu repo). Pero manda tu confesión: casi
+//          todo B.1 salió de la lista exacta que te di (void, findAll, findOne,
+//          eliminar, update, it.todo), y eso rebaja el bloque. Dato tuyo que vale:
+//          dijiste que PRIMERO pusiste `order` y lo deshiciste por miedo al error de
+//          void. Estabas bien. Error nuevo no significa que lo anterior estaba mal.
+//          Cobro de mañana: explicar por qué guardar(order) y no guardar(newItem), y
+//          por qué create devuelve void.
 //
 // B.2 EL PRECIO QUE NO EXISTE. Tu CreateOrderDto trae cliente, item,
 //     cantidad — y NADA más (verificado). Pero OrderDelNegocio.crear()
@@ -154,7 +181,17 @@
 //     decisión, la razón, y DEJA EL COMENTARIO en el código al lado
 //     de donde decidas — la regla de siempre: decisión sin comentario
 //     = decisión inexistente.
-//           R.P. (decisión + razón):
+//              Predicción: No inicia, synchronize ve que falta precio, pero cuando sqlite recrea la tabla con la columna not null y sin default, eso hace que precio llegue como Null y el insert falla con NOT NULL constraint failed: temporary_order.precio.
+//           R.P. (decisión + razón): Decidí que el precio llega en el DTO porque todavía no hay catálogo del que sacarlo, y siento que es mejor no colocar un default en 0 cómo se me había ocurrido originalmente el martes. Decidí nullable, y es mejor así que un default 0, porque un 0 diría que pagaron 0, cosa que sería inventarse datos.
+//          ── REIMU (corrección, Nov 26): lo mejor del día. Dos decisiones con razón
+//          propia y un solo principio detrás ("no me invento datos"): precio en el DTO
+//          porque no hay catálogo, y columna nullable porque NULL dice "no sé cuánto
+//          pagaron" mientras que 0 diría "pagaron 0". Verificado en tu DB: precio
+//          nullable, 212 filas en NULL, boot desbloqueado. Predicción del boot
+//          correcta. Lo que no viste (lo corrí con el server arriba):
+//          crear(fila.cantidad, null) calcula null * cantidad, y en JS eso da 0 →
+//          Money(0). Tu DB dice "no sé" y tu API responde total 0 en los 212. Ese
+//          contraste es la C.3 del D42.
 //
 // B.3 LA PRUEBA DEL DÍA (server vivo, tres curl con R.P.):
 //     (a) POST /orders con un pedido nuevo (con precio, si tu
@@ -164,9 +201,18 @@
 //     (c) GET /orders/9999 (no existe) → ¿qué responde: el
 //         NotFoundException de tu service, o el throw "No existe esa
 //         ID! Baka!" de tu adapter? UNA línea: ¿qué contrato ganó?
-//           R.P. (a):
-//           R.P. (b):
-//           R.P. (c):
+//           R.P. (a): 500 porque OrderDelNegocio no tiene item ni cliente.
+//           R.P. (b): 200, los 212 viejos pasan y no truena.
+//           R.P. (c): 500, no sale 404 con el error del throw.
+//          ── REIMU (corrección, Nov 26): (a) y (c) correctas — las reproduje: POST 500
+//          (SqliteError: NOT NULL constraint failed: order.item — el INSERT llega sin
+//          item), GET /orders/9999 500 con tu throw "No existe esa ID! Baka!" saliendo
+//          de typeorm-orders.repository.ts línea 17. (b) a medias: es verdad que pasan
+//          (200, 212 filas), pero "describe lo que VEAS" pedía el cuerpo. Cada pedido
+//          viejo llega así: {cantidad: {value: 2}, precioUnitarioCentavos: null, total:
+//          {value: 0}}. Sin id, sin cliente, sin item: es tu OrderDelNegocio
+//          serializado tal cual. A (c) le faltó la línea del contrato — la escribiste
+//          bien en C.2.
 //
 // ═══════════ PARTE C — cierre conceptual ═══════════
 //
@@ -175,7 +221,14 @@
 //     respuesta pasó frente a tus ojos. Tu service pide TU interface;
 //     si mañana la DB entera cambia, ¿QUÉ archivo se toca y cuál
 //     queda intacto?) Dos líneas.
-//           R.P.:
+//           R.P.: Se cambua order.entity y ya.
+//          ── REIMU (corrección, Nov 26): floja y ambigua. ¿Cuál de tus DOS
+//          order.entity? Y el "y ya" sobra. Respuesta completa con tus archivos: si la
+//          DB entera cambia, se tocan typeorm-orders.repository.ts (el adapter: ahí
+//          viven las consultas) y entities/order.entity.ts (la entity de TypeORM).
+//          Quedan intactos: orders.service.ts, orders.controller.ts, la interface y el
+//          dominio. Ese "intactos" es lo que ganaste hoy al invertir, y es LA línea de
+//          entrevista del día. Mañana la dices con tus palabras, sin mirar este bloque.
 //
 // C.2 El contrato desalineado (hallazgo del viernes): tu interface
 //     promete null si no hay fila; tu adapter lanza throw. Hoy que tu
@@ -184,18 +237,38 @@
 //     o el del adapter? ¿Y por qué Nest no pudo avisarte de la
 //     diferencia? Dos líneas. (Pista para lo segundo: la interface
 //     vive en el dominio, TS pelado... ¿quién la ejecuta?)
-//           R.P.:
+//           R.P.: Se cumple el del adapter, la interfface promete OrderDelNegocio | null mientras quien corrió en realidad fué OrdersORM.buscarPorId, el cual lanza, así que el service recibió el throw (500) y nunca vió un null.
+//          ── REIMU (corrección, Nov 26): la primera mitad es la mejor respuesta
+//          escrita del día: se cumplió el contrato del adapter, el service recibió el
+//          throw (500) y nunca vio un null. Falta la segunda: ¿por qué Nest no pudo
+//          avisarte? Porque la interface es TypeScript pelado: solo existe para tsc,
+//          nadie la ejecuta. tsc comprueba que OrdersORM TENGA un método buscarPorId
+//          con esa firma; no comprueba lo que el método hace por dentro. Por eso una
+//          firma que promete null y un cuerpo que lanza compilan sin queja. Decidir el
+//          contrato (¿null o throw?) y cumplirlo en el adapter es tarea del D43, no de
+//          mañana.
 //
 // C.3 Tu OrdersORM.guardar() llena cantidad y precio... y NO llena
 //     item ni cliente. Mira las columnas reales de tu tabla "order"
 //     (son 4 además del id). ¿Tu guardar está roto o incompleto? ¿Qué
 //     le falta para guardar un pedido COMPLETO de verdad? Dos líneas.
-//           R.P.:
+//           R.P.: Está incompleto, falta item y cliente.
+//          ── REIMU (corrección, Nov 26): correcto y corto. guardar llena cantidad y
+//          precio, no item ni cliente — por eso el POST da 500. La causa está una capa
+//          más adentro: tu OrderDelNegocio tampoco tiene item, ni cliente, ni id, así
+//          que el adapter no tiene de dónde sacarlos. Arreglarlo es engordar el
+//          agregado y completar el adapter: tarea grande, va DESPUÉS de la suave de
+//          mañana. Hoy no lo toques.
 //
 // C.4 Sincera y corta (la pediste tú): hoy el registro fue concreto —
 //     tus archivos, tus líneas, todo verificable. ¿Se entendió mejor
 //     la task así? UNA línea sí, UNA línea no. Sin filtro.
-//           R.P.:
+//           R.P.:Realmente fué una mejora, pero siento que aún le falta un poquito más, hay cosas que las siento abstractas/pesadas y algo complicadas de entender, pero en sí es una mejoría.
+//          ── REIMU (corrección, Nov 26): veredicto aceptado tal cual: mejora real,
+//          pero aún abstracto y pesado en partes. Hoy lo comprobaste en vivo: cuando te
+//          perdiste, lo que te sacó fue una lista exacta, línea por línea, y una sola
+//          cosa por ronda. Ese es el registro del D42: concreto, corto, un objetivo por
+//          paso. Lo abstracto (C.1, C.2) va después del código, no antes.
 //
 // ═══════════ CIERRE ═══════════
 // - tsc 0 en order-api (npx tsc --noEmit).
